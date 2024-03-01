@@ -30,6 +30,7 @@ namespace hipercow_api
 
             app.MapControllers();
 
+            ClusterHandle.InitialiseHandles(DideConstants.DideClusters);
             app.Run();
         }
     }
