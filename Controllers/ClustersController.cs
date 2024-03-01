@@ -1,28 +1,28 @@
-using Microsoft.AspNetCore.Mvc;
-
-namespace hipercow_api.Controllers
+namespace Hipercow_api.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+
     [ApiController]
     [Route("api/[controller]")]
     public class ClustersController : ControllerBase
     {
-        private readonly ILogger<ClustersController> _logger;
+        private readonly ILogger<ClustersController> logger;
 
         public ClustersController(ILogger<ClustersController> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         [HttpGet]
-        public List<String> Get()
+        public List<string> Get()
         {
-            return DideConstants.DideClusters;
+            return DideConstants.GetDideClusters();
         }
 
         [HttpGet("{cluster}")]
-        public ClusterInfo Get(String cluster)
+        public ClusterInfo Get(string cluster)
         {
-            return ClusterInfoQuery.getClusterInfo(cluster);
+            return ClusterInfoQuery.GetClusterInfo(cluster);
         }
     }
 }

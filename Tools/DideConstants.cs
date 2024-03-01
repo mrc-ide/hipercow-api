@@ -1,31 +1,37 @@
-using Microsoft.Identity.Client;
-
-namespace hipercow_api
+namespace Hipercow_api
 {
     public static class DideConstants
     {
-        public static List<String> DideClusters = new List<String> {
+        private static List<string> dideClusters = new List<string> 
+        {
                 "wpia-hn"
         };
 
-        public static List<String> wpiahnQueues = new List<String> {
+        private static List<string> wpiaHnQueues = new List<string> 
+        {
                "AllNodes",
                "Training"
         };
 
-        public static List<String>? getQueues(String cluster)
+        public static List<string> GetDideClusters()
+        {
+            return dideClusters;
+        }
+
+        public static List<string>? GetQueues(string cluster)
         {
             switch (cluster)
             {
                 case "wpia-hn":
-                    return wpiahnQueues;
+                    return wpiaHnQueues;
             }
+
             return null;
         }
 
-        public static String getDefaultQueue(String cluster)
+        public static string GetDefaultQueue(string cluster)
         {
-            return getQueues(cluster)[0];
+            return GetQueues(cluster)[0];
         }
     }
 }

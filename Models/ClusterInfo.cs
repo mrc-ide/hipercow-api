@@ -1,12 +1,17 @@
-namespace hipercow_api
+namespace Hipercow_api
 {
     public class ClusterInfo
     {
-        public String? Name { get; set; }
+        public string? Name { get; set; }
+
         public int MaxRam { get; set; }
+
         public int MaxCores { get; set; }
-        public List<String>? Nodes { get; set; }
-        public List<String>? Queues { get; set; }
-        public String? DefaultQueue { get; set;  }
+
+        public List<string>? Nodes { get; set; }
+
+        public List<string>? Queues { get; set; }
+
+        public string? DefaultQueue { get; set;  }
     }
 }

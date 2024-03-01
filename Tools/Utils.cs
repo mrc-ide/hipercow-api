@@ -1,8 +1,7 @@
-using Microsoft.Hpc.Scheduler.Properties;
-using Microsoft.Identity.Client;
-
-namespace hipercow_api
+namespace Hipercow_api
 {
+    using Microsoft.Hpc.Scheduler.Properties;
+
     public static class Utils
     {
         public static String HPCString(StoreProperty sp)
@@ -10,7 +9,8 @@ namespace hipercow_api
             return sp.Value.ToString();
         }
 
-        public static int HPCInt(StoreProperty sp) {
+        public static int HPCInt(StoreProperty sp) 
+        {
             return int.Parse(HPCString(sp));
         }
     }

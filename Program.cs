@@ -1,5 +1,4 @@
-
-namespace hipercow_api
+namespace Hipercow_api
 {
     public class Program
     {
@@ -8,8 +7,8 @@ namespace hipercow_api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -27,10 +26,9 @@ namespace hipercow_api
 
             app.UseAuthorization();
 
-
             app.MapControllers();
 
-            ClusterHandle.InitialiseHandles(DideConstants.DideClusters);
+            ClusterHandle.InitialiseHandles(DideConstants.GetDideClusters());
             app.Run();
         }
     }

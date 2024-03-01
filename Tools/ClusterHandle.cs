@@ -2,31 +2,31 @@ using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 using static Microsoft.Hpc.Diagnostics.Helpers.StepResult;
 
-namespace hipercow_api
+namespace Hipercow_api
 {
     public class ClusterHandle
     {
-        static Dictionary<String, IScheduler> ClusterHandleCache =
-            new Dictionary<String, IScheduler>();
+        private static Dictionary<string, IScheduler> clusterHandleCache =
+            new Dictionary<string, IScheduler>();
 
-        public static IScheduler? getClusterHandle(String cluster)
+        public static IScheduler? GetClusterHandle(string cluster)
         {
-            if (ClusterHandleCache.ContainsKey(cluster))
+            if (clusterHandleCache.ContainsKey(cluster))
             {
                 IScheduler result;
-                ClusterHandleCache.TryGetValue(cluster, out result);
+                clusterHandleCache.TryGetValue(cluster, out result);
                 return result;
             }
 
             IScheduler scheduler = new Scheduler();
             scheduler.Connect(cluster);
-            ClusterHandleCache.Add(cluster, scheduler);
+            clusterHandleCache.Add(cluster, scheduler);
             return scheduler;
         }
 
-        public static void InitialiseHandles(List<String> clusters)
+        public static void InitialiseHandles(List<string> clusters)
         {
-            clusters.Select((cluster) => getClusterHandle(cluster));
+            clusters.Select((cluster) => GetClusterHandle(cluster));
         }
     }
 }
