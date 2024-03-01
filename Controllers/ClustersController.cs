@@ -3,7 +3,7 @@ namespace Hipercow_api.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class ClustersController : ControllerBase
     {
         private readonly ILogger<ClustersController> logger;
