@@ -1,5 +1,7 @@
 namespace Hipercow_api
 {
+    using Hipercow_api.Tools;
+
     public class Program
     {
         public static void Main(string[] args)
@@ -28,7 +30,7 @@ namespace Hipercow_api
 
             app.MapControllers();
 
-            ClusterHandle.InitialiseHandles(DideConstants.GetDideClusters());
+            ClusterHandleCache.InitialiseHandles(DideConstants.GetDideClusters());
             app.Run();
         }
     }

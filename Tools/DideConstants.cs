@@ -18,7 +18,7 @@ namespace Hipercow_api
             return dideClusters;
         }
 
-        public static List<string>? GetQueues(string cluster)
+        public static List<string> GetQueues(string cluster)
         {
             switch (cluster)
             {
@@ -26,12 +26,20 @@ namespace Hipercow_api
                     return wpiaHnQueues;
             }
 
-            return null;
+            return new List<string>();
         }
 
         public static string GetDefaultQueue(string cluster)
         {
-            return GetQueues(cluster)[0];
+            List<string> queues = GetQueues(cluster);
+            if (queues.Count > 0)
+            {
+                return queues[0];
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
     }
 }
