@@ -7,9 +7,13 @@ namespace Hipercow_api
 
     public static class ClusterInfoQuery
     {
-        public static ClusterInfo GetClusterInfo(string cluster)
+        public static ClusterInfo? GetClusterInfo(string cluster)
         {
-            IScheduler scheduler = ClusterHandle.GetClusterHandle(cluster);
+            IScheduler? scheduler = ClusterHandle.GetClusterHandle(cluster);
+            if (scheduler == null)
+            {
+                return null;
+            }
             IFilterCollection filter = GetFilterNonComputeNodes(scheduler, cluster);
             ISortCollection sorter = GetSorterAscending(scheduler);
             IPropertyIdCollection properties = GetNodeProperties();

@@ -20,9 +20,14 @@ namespace Hipercow_api.Controllers
         }
 
         [HttpGet("{cluster}")]
-        public ClusterInfo Get(string cluster)
+        public IActionResult Get(string cluster)
         {
-            return ClusterInfoQuery.GetClusterInfo(cluster);
+            ClusterInfo? info = ClusterInfoQuery.GetClusterInfo(cluster);
+            if (info != null)
+            {
+                return this.Ok(info);
+            }
+            return this.NotFound();
         }
     }
 }

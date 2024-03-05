@@ -7,7 +7,7 @@ namespace Hipercow_api
     {
         private static ClusterHandleCache clusterHandleCache = new ClusterHandleCache();
 
-        public static IScheduler GetClusterHandle(string cluster)
+        public static IScheduler? GetClusterHandle(string cluster)
         {
             IScheduler? result;
             clusterHandleCache.TryGetValue(cluster, out result);
@@ -16,10 +16,15 @@ namespace Hipercow_api
                 return result;
             }
 
-            IScheduler scheduler = new Scheduler();
-            scheduler.Connect(cluster);
-            clusterHandleCache.Add(cluster, scheduler);
-            return scheduler;
+            if (DideConstants.GetDideClusters().Contains(cluster))
+            {
+                IScheduler scheduler = new Scheduler();
+                scheduler.Connect(cluster);
+                clusterHandleCache.Add(cluster, scheduler);
+                return scheduler;
+            }
+
+            return null;
         }
     }
 }

@@ -4,9 +4,9 @@ namespace Hipercow_api
 
     public static class Utils
     {
-        public static String HPCString(StoreProperty sp)
+        public static string HPCString(StoreProperty sp)
         {
-            return sp.Value.ToString();
+            return sp.Value.ToString() ?? string.Empty;
         }
 
         public static int HPCInt(StoreProperty sp) 
