@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hipercow-api", "hipercow-api.csproj", "{7265FE57-8E8C-4EDB-951D-4D1E6E21A3CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hipercow-api", "hipercow-api\hipercow-api.csproj", "{7265FE57-8E8C-4EDB-951D-4D1E6E21A3CF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hipercow-api-unit-tests", "hipercow-api-unit-tests\hipercow-api-unit-tests.csproj", "{7672D112-44C5-4D02-98DE-C8FE50895F4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{7265FE57-8E8C-4EDB-951D-4D1E6E21A3CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7265FE57-8E8C-4EDB-951D-4D1E6E21A3CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7265FE57-8E8C-4EDB-951D-4D1E6E21A3CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7672D112-44C5-4D02-98DE-C8FE50895F4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7672D112-44C5-4D02-98DE-C8FE50895F4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7672D112-44C5-4D02-98DE-C8FE50895F4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7672D112-44C5-4D02-98DE-C8FE50895F4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
