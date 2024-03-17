@@ -1,18 +1,19 @@
 namespace Hipercow_api.Controllers
 {
+    using Hipercow_api.Tools;
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
     [Route("api/v1/[controller]")]
     public class ClustersController : ControllerBase
     {
-        private readonly ILogger<ClustersController> logger;
+        private IClusterInfoQuery clusterInfoQuery = new ClusterInfoQuery();
 
-        public ClustersController(ILogger<ClustersController> logger)
+        public void MockClusterInfoQuery(IClusterInfoQuery inject)
         {
-            this.logger = logger;
+            this.clusterInfoQuery = inject;
         }
-
+        
         [HttpGet]
         public List<string> Get()
         {
@@ -22,11 +23,12 @@ namespace Hipercow_api.Controllers
         [HttpGet("{cluster}")]
         public IActionResult Get(string cluster)
         {
-            ClusterInfo? info = ClusterInfoQuery.GetClusterInfo(cluster);
+            ClusterInfo? info = this.clusterInfoQuery.GetClusterInfo(cluster);
             if (info != null)
             {
                 return this.Ok(info);
             }
+
             return this.NotFound();
         }
     }

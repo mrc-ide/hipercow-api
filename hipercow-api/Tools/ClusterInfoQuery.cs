@@ -1,19 +1,19 @@
 namespace Hipercow_api
 {
-    using Microsoft.ComputeCluster;
-    using Microsoft.Data.SqlClient.DataClassification;
+    using Hipercow_api.Tools;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
 
-    public static class ClusterInfoQuery
+    public class ClusterInfoQuery : IClusterInfoQuery
     {
-        public static ClusterInfo? GetClusterInfo(string cluster)
+        public ClusterInfo? GetClusterInfo(string cluster)
         {
             IScheduler? scheduler = ClusterHandle.GetClusterHandle(cluster);
             if (scheduler == null)
             {
                 return null;
             }
+
             IFilterCollection filter = GetFilterNonComputeNodes(scheduler, cluster);
             ISortCollection sorter = GetSorterAscending(scheduler);
             IPropertyIdCollection properties = GetNodeProperties();

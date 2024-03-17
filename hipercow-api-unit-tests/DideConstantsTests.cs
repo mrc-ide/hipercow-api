@@ -1,7 +1,7 @@
-﻿using Hipercow_api;
-
-namespace hipercow_api_unit_tests
+﻿namespace Hipercow_api_unit_tests
 {
+    using Hipercow_api;
+
     public class DideConstantsTest
     {
         [Fact]
