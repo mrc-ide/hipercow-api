@@ -30,9 +30,10 @@ namespace Hipercow_api_unit_tests
         {
             ClustersController cc = new ClustersController();
             FakeClusterInfoQuery fake = new FakeClusterInfoQuery();
-            cc.MockClusterInfoQuery(new FakeClusterInfoQuery());
+            cc.MockClusterInfoQuery(fake);
             IActionResult res = cc.Get("wpia-hn");
-            Assert.Equivalent(cc.Ok(fake.GetClusterInfo("wpia-hn")), res);
+            ClusterInfo? fakeinfo = fake.GetClusterInfo("wpia-hn");
+            Assert.Equivalent(cc.Ok(fakeinfo), res);
         }
 
         private class FakeClusterInfoQuery : IClusterInfoQuery
