@@ -5,7 +5,6 @@ namespace Hipercow_api_unit_tests
     using Hipercow_api.Tools;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.ModelBinding;
-    using StyleCop;
 
     public class ClustersControllerUnitTest
     {
@@ -19,7 +18,7 @@ namespace Hipercow_api_unit_tests
         }
 
         [Fact]
-        public void GetWrongClusterReturnsNotFound()
+        public void GetWrongCluster_ReturnsNotFound()
         {
             ClustersController cc = new ClustersController();
             IActionResult res = cc.Get("turnip");

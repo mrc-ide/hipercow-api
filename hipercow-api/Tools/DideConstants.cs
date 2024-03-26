@@ -2,12 +2,12 @@ namespace Hipercow_api
 {
     public static class DideConstants
     {
-        private static List<string> dideClusters = new List<string> 
+        private static List<string> dideClusters = new List<string>
         {
                 "wpia-hn"
         };
 
-        private static List<string> wpiaHnQueues = new List<string> 
+        private static List<string> wpiaHnQueues = new List<string>
         {
                "AllNodes",
                "Training"

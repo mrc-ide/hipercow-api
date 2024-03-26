@@ -9,7 +9,7 @@ namespace Hipercow_api
             return sp.Value.ToString() ?? string.Empty;
         }
 
-        public static int HPCInt(StoreProperty sp) 
+        public static int HPCInt(StoreProperty sp)
         {
             return int.Parse(HPCString(sp));
         }

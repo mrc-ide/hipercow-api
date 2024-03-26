@@ -13,7 +13,7 @@ namespace Hipercow_api.Controllers
         {
             this.clusterInfoQuery = inject;
         }
-        
+
         [HttpGet]
         public List<string> Get()
         {
