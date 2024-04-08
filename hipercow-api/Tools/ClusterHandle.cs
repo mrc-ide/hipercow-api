@@ -1,10 +1,7 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api
+namespace Hipercow_api.Tools
 {
-    using Hipercow_api.Tools;
-    using Microsoft.Hpc.Scheduler;
-
     /// <summary>
     /// The HPC call to create the handle to a cluster can be slow. We want
     /// to cache these handles for re-use, and create them early to maximise
@@ -18,6 +15,16 @@ namespace Hipercow_api
         private static ClusterHandleCache clusterHandleCache = new ClusterHandleCache();
 
         /// <summary>
+        /// Return the cluster handle cache - used for testing so we can
+        /// fake a cluster node.
+        /// </summary>
+        /// <returns>The ClusterHandleCache.</returns>
+        public static ClusterHandleCache GetClusterHandleCache()
+        {
+            return clusterHandleCache;
+        }
+
+        /// <summary>
         /// Return a handle to a named cluster, using the cache where possible,
         /// creating a new handle if it doesn't exist, or returning null if the
         /// cluster name was invalid.
@@ -25,9 +32,9 @@ namespace Hipercow_api
         /// <param name="cluster">The name of the cluster.</param>
         /// <returns>A handle to that cluster, or null if the named cluster
         /// did not exist.</returns>
-        public static IScheduler? GetClusterHandle(string cluster)
+        public static HipercowScheduler? GetClusterHandle(string cluster)
         {
-            IScheduler? result;
+            HipercowScheduler? result;
             clusterHandleCache.TryGetValue(cluster, out result);
             if (result != null)
             {
@@ -36,7 +43,7 @@ namespace Hipercow_api
 
             if (DideConstants.GetDideClusters().Contains(cluster))
             {
-                IScheduler scheduler = new Scheduler();
+                HipercowScheduler scheduler = new HipercowScheduler();
                 scheduler.Connect(cluster);
                 clusterHandleCache.Add(cluster, scheduler);
                 return scheduler;

@@ -1,9 +1,18 @@
-﻿namespace Hipercow_api_unit_tests
-{
-    using Hipercow_api;
+﻿// Copyright (c) Imperial College London. All rights reserved.
 
-    public class DideConstantsTest
+namespace Hipercow_api_unit_tests
+{
+    using Hipercow_api.Tools;
+
+    /// <summary>
+    /// Tests for the DideConstants class.
+    /// </summary>
+    public class DideConstantsTests
     {
+        /// <summary>
+        /// Test that GetDideClusters returns
+        /// the hardcoded value.
+        /// </summary>
         [Fact]
         public void GetDideClusters_works()
         {
@@ -12,6 +21,9 @@
             Assert.Contains("wpia-hn", res);
         }
 
+        /// <summary>
+        /// Test that we can get the list of published queues.
+        /// </summary>
         [Fact]
         public void GetQueues_works()
         {
@@ -22,6 +34,9 @@
             Assert.Empty(DideConstants.GetQueues("turnip"));
         }
 
+        /// <summary>
+        /// Test that we can get the default queue.
+        /// </summary>
         [Fact]
         public void GetDefaultQueue_works()
         {

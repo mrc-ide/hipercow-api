@@ -1,13 +1,20 @@
+// Copyright (c) Imperial College London. All rights reserved.
+
 namespace Hipercow_api_unit_tests
 {
-    using Hipercow_api;
     using Hipercow_api.Controllers;
+    using Hipercow_api.Models;
     using Hipercow_api.Tools;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.ModelBinding;
 
+    /// <summary>
+    /// Test the /clusters endpoint.
+    /// </summary>
     public class ClustersControllerUnitTest
     {
+        /// <summary>
+        /// Test that /clusters tells us about wpia-hn.
+        /// </summary>
         [Fact]
         public void GetClusterCall_Works()
         {
@@ -17,6 +24,10 @@ namespace Hipercow_api_unit_tests
             Assert.Equal("wpia-hn", clusters.First());
         }
 
+        /// <summary>
+        /// Test that /clusters/wrong handles incorrect
+        /// cluster name tidily.
+        /// </summary>
         [Fact]
         public void GetWrongCluster_ReturnsNotFound()
         {
@@ -25,6 +36,10 @@ namespace Hipercow_api_unit_tests
             Assert.Equivalent(cc.NotFound(), res);
         }
 
+        /// <summary>
+        /// Test just the endpoint handling of /clusters/cluster
+        /// by providing fake data.
+        /// </summary>
         [Fact]
         public void GetClusterinfo_Works()
         {

@@ -1,6 +1,6 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api
+namespace Hipercow_api.Tools
 {
     using Microsoft.Hpc.Scheduler.Properties;
 

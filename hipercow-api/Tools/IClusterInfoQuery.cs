@@ -2,6 +2,8 @@
 
 namespace Hipercow_api.Tools
 {
+    using Hipercow_api.Models;
+
     /// <summary>
     /// Interface wrapper for GetClusterInfo, which fetches cluster
     /// information about a given cluster. (Currently only wpia-hn.)

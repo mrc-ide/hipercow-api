@@ -1,8 +1,8 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api
+namespace Hipercow_api.Tools
 {
-    using Hipercow_api.Tools;
+    using Hipercow_api.Models;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
 
@@ -15,20 +15,16 @@ namespace Hipercow_api
         /// <inheritdoc/>
         public ClusterInfo? GetClusterInfo(string cluster)
         {
-            IScheduler? scheduler = ClusterHandle.GetClusterHandle(cluster);
+            HipercowScheduler? scheduler = ClusterHandle.GetClusterHandle(cluster);
             if (scheduler == null)
             {
                 return null;
             }
 
-            IFilterCollection filter = GetFilterNonComputeNodes(scheduler, cluster);
-            ISortCollection sorter = GetSorterAscending(scheduler);
+            IFilterCollection filter = GetFilterNonComputeNodes(cluster);
+            ISortCollection sorter = GetSorterAscending();
             IPropertyIdCollection properties = GetNodeProperties();
-            ISchedulerCollection nodes = scheduler.GetNodeList(filter, sorter);
-            ISchedulerRowEnumerator nodeEnumerator =
-                scheduler.OpenNodeEnumerator(properties, filter, sorter);
-
-            PropertyRowSet rows = nodeEnumerator.GetRows(int.MaxValue);
+            PropertyRowSet rows = scheduler.NodesQuery(properties, filter, sorter);
 
             int maxRam = (int)Math.Round((1 / 1024.0) * rows.Rows.Select(
                   (row) => Utils.HPCInt(row[NodePropertyIds.MemorySize])).Max());
@@ -52,15 +48,12 @@ namespace Hipercow_api
         /// Helper to return a search filter, which when used queries for all nodes except
         /// the head node.
         /// </summary>
-        /// <param name="scheduler">The IScheduler object for the HPC headnode.</param>
         /// <param name="cluster">The cluster (headnode) name.</param>
         /// <returns>An IFilterCollection object used for filtering.</returns>
         private static IFilterCollection GetFilterNonComputeNodes(
-            IScheduler scheduler,
             string cluster)
         {
-            IFilterCollection nodeFilter =
-                scheduler.CreateFilterCollection();
+            IFilterCollection nodeFilter = new FilterCollection();
 
             nodeFilter.Add(
                 FilterOperator.NotEqual,
@@ -73,13 +66,10 @@ namespace Hipercow_api
         /// <summary>
         /// Helper to return a node sorter in alphabetical ascending order.
         /// </summary>
-        /// <param name="scheduler">The IScheduler object for the HPC headnode.</param>
         /// <returns>An ISortCollection object used for sorting in increasing node number.</returns>
-        private static ISortCollection GetSorterAscending(
-            IScheduler scheduler)
+        private static ISortCollection GetSorterAscending()
         {
-            ISortCollection nodeSorter =
-               scheduler.CreateSortCollection();
+            ISortCollection nodeSorter = new SortCollection();
 
             nodeSorter.Add(
                 SortProperty.SortOrder.Ascending,

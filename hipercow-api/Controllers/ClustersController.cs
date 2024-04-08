@@ -2,6 +2,7 @@
 
 namespace Hipercow_api.Controllers
 {
+    using Hipercow_api.Models;
     using Hipercow_api.Tools;
     using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,7 @@ namespace Hipercow_api.Controllers
         /// returning defined results, rather than doing a genuine query.
         /// </summary>
         /// <param name="inject">A mock cluster info query.</param>
+        [NonAction]
         public void MockClusterInfoQuery(IClusterInfoQuery inject)
         {
             this.clusterInfoQuery = inject;

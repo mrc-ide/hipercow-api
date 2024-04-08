@@ -2,21 +2,19 @@
 
 namespace Hipercow_api.Tools
 {
-    using Microsoft.Hpc.Scheduler;
-
     /// <summary>
-    /// A dictionary of handles, so we can retrieve the IScheduler
+    /// A dictionary of handles, so we can retrieve the scheduler
     /// handle for named cluster quickly, without having to recreate
     /// it every time (which is slow).
     /// </summary>
-    public class ClusterHandleCache : Dictionary<string, IScheduler>
+    public class ClusterHandleCache : Dictionary<string, HipercowScheduler>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterHandleCache"/> class.
         /// </summary>
         public ClusterHandleCache()
         {
-            new Dictionary<string, IScheduler>();
+            new Dictionary<string, HipercowScheduler>();
         }
 
         /// <summary>

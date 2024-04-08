@@ -1,6 +1,6 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api
+namespace Hipercow_api.Models
 {
     /// <summary>
     /// A class containing information about a cluster.
