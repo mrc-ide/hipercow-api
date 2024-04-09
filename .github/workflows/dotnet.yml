@@ -37,7 +37,7 @@ jobs:
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4.0.1
       with:
+        file: output.xml
+        directory: .
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: mrc-ide/hipercow-api
-	file: output.xml
-	directory: .
