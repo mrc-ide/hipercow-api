@@ -26,7 +26,16 @@ jobs:
       run: dotnet add hipercow-api package Microsoft.HPC.SDK --version 6.3.8025-beta
     - name: Install dependencies for hipercow-api-unit-tests
       run: dotnet add hipercow-api-unit-tests package Microsoft.HPC.SDK --version 6.3.8025-beta
+    - name: Install dotnet-coverage
+      run: dotnet tool install --global dotnet-coverage
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
+    - name: Unit Tests
       run: dotnet test
+    - name: Coverage
+      run: dotnet-coverage collect -f xml dotnet test
+    - name: Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        file: output.xml
+        directory: .

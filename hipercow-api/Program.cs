@@ -1,9 +1,12 @@
 // Copyright (c) Imperial College London. All rights reserved.
 using System.Diagnostics.CodeAnalysis;
+
 [assembly: ExcludeFromCodeCoverage]
+
 namespace Hipercow_api
 {
     using Hipercow_api.Tools;
+
     /// <summary>
     /// Hipercow_api main class.
     /// </summary>
