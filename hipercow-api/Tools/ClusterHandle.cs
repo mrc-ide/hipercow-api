@@ -30,9 +30,10 @@ namespace Hipercow_api.Tools
         /// cluster name was invalid.
         /// </summary>
         /// <param name="cluster">The name of the cluster.</param>
+        /// <param name="testing">Flag for testing.</param>
         /// <returns>A handle to that cluster, or null if the named cluster
         /// did not exist.</returns>
-        public static HipercowScheduler? GetClusterHandle(string cluster)
+        public static HipercowScheduler? GetClusterHandle(string cluster, bool testing = false)
         {
             HipercowScheduler? result;
             clusterHandleCache.TryGetValue(cluster, out result);
@@ -41,9 +42,9 @@ namespace Hipercow_api.Tools
                 return result;
             }
 
-            if (DideConstants.GetDideClusters().Contains(cluster))
+            if (DideConstants.GetDideClusters(testing).Contains(cluster))
             {
-                HipercowScheduler scheduler = new HipercowScheduler();
+                HipercowScheduler scheduler = new HipercowScheduler(testing);
                 scheduler.Connect(cluster);
                 clusterHandleCache.Add(cluster, scheduler);
                 return scheduler;

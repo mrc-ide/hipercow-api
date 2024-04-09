@@ -20,6 +20,16 @@ namespace Hipercow_api.Tools
         };
 
         /// <summary>
+        /// A list of clusters including a couple of fakes for testing.
+        /// </summary>
+        private static List<string> testClusters = new List<string>
+        {
+                "wpia-hn",
+                "fake1",
+                "fake2",
+        };
+
+        /// <summary>
         /// The list of queues that we publish for wpia-hn. If we add more
         /// clusters in the future, this should be come a look-up.
         /// </summary>
@@ -32,10 +42,11 @@ namespace Hipercow_api.Tools
         /// <summary>
         /// Public function to return the list of published clusters.
         /// </summary>
+        /// <param name="testing">If true, add two more clusters, fake1 and fake2.</param>
         /// <returns>A list of strings which are the cluster names.</returns>
-        public static List<string> GetDideClusters()
+        public static List<string> GetDideClusters(bool testing = false)
         {
-            return dideClusters;
+            return (!testing) ? dideClusters : testClusters;
         }
 
         /// <summary>

@@ -22,9 +22,13 @@ namespace Hipercow_api.Tools
         /// Called at the start to create all our handles in advance.
         /// </summary>
         /// <param name="clusters">List of clusters to get handles for.</param>
-        public static void InitialiseHandles(List<string> clusters)
+        /// <param name="testing">Testing mode - allows adding non-existent clusters.</param>
+        public static void InitialiseHandles(List<string> clusters, bool testing = false)
         {
-            clusters.Select((cluster) => ClusterHandle.GetClusterHandle(cluster));
+            foreach (string cluster in clusters)
+            {
+                ClusterHandle.GetClusterHandle(cluster, testing);
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api_unit_tests
+namespace Hipercow_api_unit_tests.Tools
 {
     using Hipercow_api.Tools;
 
