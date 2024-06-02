@@ -1,9 +1,21 @@
+// Copyright (c) Imperial College London. All rights reserved.
+using System.Diagnostics.CodeAnalysis;
+
+[assembly: ExcludeFromCodeCoverage]
+
 namespace Hipercow_api
 {
     using Hipercow_api.Tools;
 
+    /// <summary>
+    /// Hipercow_api main class.
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Hipercow_api Main method.
+        /// </summary>
+        /// <param name="args">Command-line arguments to main - not used.</param>
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
