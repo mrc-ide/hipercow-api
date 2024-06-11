@@ -21,14 +21,12 @@ namespace Hipercow_api.Controllers
         private IClusterInfoQuery clusterInfoQuery = new ClusterInfoQuery();
 
         /// <summary>
-        /// Used for testing. Allow injecting an IClusterInfoQuery object
-        /// returning defined results, rather than doing a genuine query.
+        /// Initializes a new instance of the <see cref="ClustersController"/> class.
         /// </summary>
-        /// <param name="inject">A mock cluster info query.</param>
-        [NonAction]
-        public void MockClusterInfoQuery(IClusterInfoQuery inject)
+        /// <param name="clusterInfoQuery">For testing only.</param>
+        public ClustersController(IClusterInfoQuery clusterInfoQuery)
         {
-            this.clusterInfoQuery = inject;
+            this.clusterInfoQuery = clusterInfoQuery;
         }
 
         /// <summary>

@@ -18,7 +18,7 @@ namespace Hipercow_api_unit_tests.Controllers
         [Fact]
         public void GetClusterCall_Works()
         {
-            ClustersController cc = new ClustersController();
+            ClustersController cc = new ClustersController(new FakeClusterInfoQuery());
             List<string> clusters = cc.Get();
             Assert.Single(clusters);
             Assert.Equal("wpia-hn", clusters.First());
@@ -31,7 +31,8 @@ namespace Hipercow_api_unit_tests.Controllers
         [Fact]
         public void GetWrongCluster_ReturnsNotFound()
         {
-            ClustersController cc = new ClustersController();
+            FakeClusterInfoQuery fake = new FakeClusterInfoQuery();
+            ClustersController cc = new ClustersController(fake);
             IActionResult res = cc.Get("turnip");
             Assert.Equivalent(cc.NotFound(), res);
         }
@@ -43,11 +44,10 @@ namespace Hipercow_api_unit_tests.Controllers
         [Fact]
         public void GetClusterinfo_Works()
         {
-            ClustersController cc = new ClustersController();
             FakeClusterInfoQuery fake = new FakeClusterInfoQuery();
-            cc.MockClusterInfoQuery(fake);
-            IActionResult res = cc.Get("wpia-hn");
-            ClusterInfo? fakeinfo = fake.GetClusterInfo("wpia-hn");
+            ClustersController cc = new ClustersController(fake);
+            IActionResult res = cc.Get("potato");
+            ClusterInfo? fakeinfo = fake.GetClusterInfo("potato");
             Assert.Equivalent(cc.Ok(fakeinfo), res);
         }
 
@@ -55,13 +55,20 @@ namespace Hipercow_api_unit_tests.Controllers
         {
             public ClusterInfo? GetClusterInfo(string cluster)
             {
-                return new ClusterInfo(
+                if (cluster == "potato")
+                {
+                    return new ClusterInfo(
                     "potato",
                     64,
                     4,
                     new List<string> { "A", "B" },
                     new List<string> { "Q1", "Q2" },
                     "Q1");
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
     }
