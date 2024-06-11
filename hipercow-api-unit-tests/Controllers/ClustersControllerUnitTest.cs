@@ -6,6 +6,7 @@ namespace Hipercow_api_unit_tests.Controllers
     using Hipercow_api.Models;
     using Hipercow_api.Tools;
     using Microsoft.AspNetCore.Mvc;
+    using Moq;
 
     /// <summary>
     /// Test the /clusters endpoint.
@@ -18,10 +19,9 @@ namespace Hipercow_api_unit_tests.Controllers
         [Fact]
         public void GetClusterCall_Works()
         {
-            ClustersController cc = new ClustersController(new FakeClusterInfoQuery());
+            ClustersController cc = new ClustersController(new ClusterInfoQuery());
             List<string> clusters = cc.Get();
-            Assert.Single(clusters);
-            Assert.Equal("wpia-hn", clusters.First());
+            Assert.Equal(new List<string> { "wpia-hn" }, clusters);
         }
 
         /// <summary>
@@ -31,9 +31,10 @@ namespace Hipercow_api_unit_tests.Controllers
         [Fact]
         public void GetWrongCluster_ReturnsNotFound()
         {
-            FakeClusterInfoQuery fake = new FakeClusterInfoQuery();
-            ClustersController cc = new ClustersController(fake);
-            IActionResult res = cc.Get("turnip");
+            Mock<IClusterInfoQuery> mockClusterInfoQuery = new();
+            mockClusterInfoQuery.Setup(x => x.GetClusterInfo("wrong")).Returns((ClusterInfo?)null);
+            ClustersController cc = new ClustersController(mockClusterInfoQuery.Object);
+            IActionResult res = cc.Get("wrong");
             Assert.Equivalent(cc.NotFound(), res);
         }
 
@@ -44,32 +45,19 @@ namespace Hipercow_api_unit_tests.Controllers
         [Fact]
         public void GetClusterinfo_Works()
         {
-            FakeClusterInfoQuery fake = new FakeClusterInfoQuery();
-            ClustersController cc = new ClustersController(fake);
-            IActionResult res = cc.Get("potato");
-            ClusterInfo? fakeinfo = fake.GetClusterInfo("potato");
-            Assert.Equivalent(cc.Ok(fakeinfo), res);
-        }
-
-        private class FakeClusterInfoQuery : IClusterInfoQuery
-        {
-            public ClusterInfo? GetClusterInfo(string cluster)
-            {
-                if (cluster == "potato")
-                {
-                    return new ClusterInfo(
+            ClusterInfo potato = new ClusterInfo(
                     "potato",
                     64,
                     4,
                     new List<string> { "A", "B" },
                     new List<string> { "Q1", "Q2" },
                     "Q1");
-                }
-                else
-                {
-                    return null;
-                }
-            }
+
+            Mock<IClusterInfoQuery> mockClusterInfoQuery = new();
+            mockClusterInfoQuery.Setup(x => x.GetClusterInfo("potato")).Returns(potato);
+            ClustersController cc = new ClustersController(mockClusterInfoQuery.Object);
+            IActionResult res = cc.Get("potato");
+            Assert.Equivalent(cc.Ok(potato), res);
         }
     }
 }
