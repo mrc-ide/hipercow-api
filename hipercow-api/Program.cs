@@ -1,16 +1,14 @@
 // Copyright (c) Imperial College London. All rights reserved.
-using System.Diagnostics.CodeAnalysis;
-
-[assembly: ExcludeFromCodeCoverage]
-
 namespace Hipercow_api
 {
+    using System.Diagnostics.CodeAnalysis;
     using Hipercow_api.Tools;
 
     /// <summary>
     /// Hipercow_api main class.
     /// </summary>
-    public class Program
+    [ExcludeFromCodeCoverage]
+    public partial class Program
     {
         /// <summary>
         /// Hipercow_api Main method.
