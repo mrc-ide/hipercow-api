@@ -25,6 +25,7 @@ namespace Hipercow_api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<IClusterInfoQuery, ClusterInfoQuery>();
+            builder.Services.AddSingleton<IHipercowScheduler, HipercowScheduler>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -40,7 +41,7 @@ namespace Hipercow_api
 
             app.MapControllers();
 
-            ClusterHandleCache.InitialiseHandles(DideConstants.GetDideClusters());
+            ClusterHandleCache.GetSingletonClusterHandleCache().InitialiseHandles(DideConstants.GetDideClusters());
             app.Run();
         }
     }

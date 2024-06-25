@@ -13,9 +13,13 @@ namespace Hipercow_api.Tools
     public class ClusterInfoQuery : IClusterInfoQuery
     {
         /// <inheritdoc/>
-        public ClusterInfo? GetClusterInfo(string cluster)
+        public ClusterInfo? GetClusterInfo(string cluster, IHipercowScheduler? scheduler = null)
         {
-            HipercowScheduler? scheduler = ClusterHandle.GetClusterHandle(cluster);
+            if (scheduler == null)
+            {
+                scheduler = ClusterHandleCache.GetSingletonClusterHandleCache().GetClusterHandle(cluster)!;
+            }
+
             if (scheduler == null)
             {
                 return null;
@@ -24,7 +28,7 @@ namespace Hipercow_api.Tools
             IFilterCollection filter = GetFilterNonComputeNodes(cluster);
             ISortCollection sorter = GetSorterAscending();
             IPropertyIdCollection properties = GetNodeProperties();
-            PropertyRowSet rows = scheduler.NodesQuery(properties, filter, sorter);
+            PropertyRowSet rows = scheduler.NodesQuery(properties, filter, sorter)!;
 
             int maxRam = (int)Math.Round((1 / 1024.0) * rows.Rows.Select(
                   (row) => Utils.HPCInt(row[NodePropertyIds.MemorySize])).Max());

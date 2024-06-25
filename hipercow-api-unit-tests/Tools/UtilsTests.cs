@@ -20,10 +20,6 @@ namespace Hipercow_api_unit_tests.Tools
             StoreProperty p = new StoreProperty("test_string", "test_val");
             string s = Utils.HPCString(p);
             Assert.Equal("test_val", s);
-
-            // The function also can return an empty string for nulls
-            // in theory, but that should never happen, and is hard
-            // to fake the test.
         }
 
         /// <summary>

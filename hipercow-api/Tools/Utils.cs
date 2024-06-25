@@ -17,7 +17,16 @@ namespace Hipercow_api.Tools
         /// <returns>A string which either has a value or is empty, but is not null.</returns>
         public static string HPCString(StoreProperty sp)
         {
-            return sp.Value.ToString() ?? string.Empty;
+            string res = string.Empty;
+            if (sp.Value != null)
+            {
+                if (sp.Value.ToString() != null)
+                {
+                    res = sp.Value.ToString()!;
+                }
+            }
+
+            return res;
         }
 
         /// <summary>

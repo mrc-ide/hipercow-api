@@ -32,7 +32,7 @@ namespace Hipercow_api_unit_tests.Controllers
         public void GetWrongCluster_ReturnsNotFound()
         {
             Mock<IClusterInfoQuery> mockClusterInfoQuery = new();
-            mockClusterInfoQuery.Setup(x => x.GetClusterInfo("wrong")).Returns((ClusterInfo?)null);
+            mockClusterInfoQuery.Setup(x => x.GetClusterInfo("wrong", null)).Returns((ClusterInfo?)null);
             ClustersController cc = new ClustersController(mockClusterInfoQuery.Object);
             IActionResult res = cc.Get("wrong");
             Assert.Equivalent(cc.NotFound(), res);
@@ -54,7 +54,7 @@ namespace Hipercow_api_unit_tests.Controllers
                     "Q1");
 
             Mock<IClusterInfoQuery> mockClusterInfoQuery = new();
-            mockClusterInfoQuery.Setup(x => x.GetClusterInfo("potato")).Returns(potato);
+            mockClusterInfoQuery.Setup(x => x.GetClusterInfo("potato", null)).Returns(potato);
             ClustersController cc = new ClustersController(mockClusterInfoQuery.Object);
             IActionResult res = cc.Get("potato");
             Assert.Equivalent(cc.Ok(potato), res);

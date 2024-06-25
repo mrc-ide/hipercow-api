@@ -4,7 +4,10 @@ namespace Hipercow_api_unit_tests.Tools
 {
     using Hipercow_api.Models;
     using Hipercow_api.Tools;
+    using Microsoft.ComputeCluster;
+    using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
+    using Moq;
 
     /// <summary>
     /// Test the /clusters/cluster info endpoint.
@@ -17,9 +20,8 @@ namespace Hipercow_api_unit_tests.Tools
         [Fact]
         public void GetClusterInfo_works()
         {
-            ClusterInfoQuery q = new ClusterInfoQuery();
-            HipercowScheduler fake = new HipercowScheduler(true);
-
+            // Below is fake data in the form that MS HPC
+            // might return if we asked it.
             StoreProperty[] sp1 =
             {
                 new StoreProperty(NodePropertyIds.Name, "node-1"),
@@ -40,26 +42,27 @@ namespace Hipercow_api_unit_tests.Tools
                 new PropertyRow(sp2),
             ];
 
-            fake.SetTestData(new PropertyRowSet(null, rows));
-            ClusterHandleCache chc = ClusterHandle.GetClusterHandleCache();
-            chc.Remove("wpia-hn");
-            chc.Add("wpia-hn", fake);
-            ClusterInfo? info = q.GetClusterInfo("wpia-hn");
+            PropertyRowSet prs = new PropertyRowSet(null, rows);
+
+            // Mock the cluster headnode - make the Connect and NodesQuery wrappers do nothing.
+            Mock<IHipercowScheduler> fakeHPC = new();
+            fakeHPC.Setup(x => x.Connect(It.IsAny<string>()));
+            fakeHPC.Setup(x => x.NodesQuery(It.IsAny<IPropertyIdCollection>(), It.IsAny<IFilterCollection>(), It.IsAny<ISortCollection>())).Returns(prs).Verifiable();
+
+            // Test that we can get back the fake data with an info query.
+            ClusterInfoQuery q = new ClusterInfoQuery();
+            ClusterInfo? info = q.GetClusterInfo("wpia-hn", fakeHPC.Object);
             Assert.NotNull(info);
             Assert.Equal(32, info.MaxRam);
             Assert.Equal(8, info.MaxCores);
 
-            chc.Remove("wpia-hn");
-            ClusterHandleCache.InitialiseHandles(new List<string> { "fake1", "fake2", "fake1" }, true);
-            Assert.Equal(2, chc.Count());
+            Assert.Equal("wpia-hn", info.Name);
+            Assert.Equal("AllNodes", info.DefaultQueue);
+            Assert.Equivalent(new List<string> { "node-1", "node-2" }, info.Nodes);
+            Assert.Equivalent(new List<string> { "AllNodes", "Training" }, info.Queues);
 
-            chc.Remove("fake1");
-            chc.Remove("fake2");
-            HipercowScheduler? fake1 = ClusterHandle.GetClusterHandle("fake1", true);
-            HipercowScheduler? fake2 = ClusterHandle.GetClusterHandle("fake2", true);
-            HipercowScheduler? fake1b = ClusterHandle.GetClusterHandle("fake1", true);
-            Assert.Equal(fake1, fake1b);
-            Assert.NotEqual(fake1, fake2);
+            // Test that an invalid scheduler returns null
+            Assert.Null(q.GetClusterInfo("potato"));
         }
     }
 }

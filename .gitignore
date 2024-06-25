@@ -17,3 +17,8 @@ Version.cs
 Version.h
 Version.cpp
 .vs
+hipercow-api/Properties/PublishProfiles
+coverage.xml
+output.xml
+output.coverage
+TestResults
