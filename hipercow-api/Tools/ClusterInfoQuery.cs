@@ -25,18 +25,18 @@ namespace Hipercow_api.Tools
                 return null;
             }
 
-            IFilterCollection filter = GetFilterNonComputeNodes(cluster);
-            ISortCollection sorter = GetSorterAscending();
-            IPropertyIdCollection properties = GetNodeProperties();
-            PropertyRowSet rows = scheduler.NodesQuery(properties, filter, sorter)!;
+            var filter = GetFilterNonComputeNodes(cluster);
+            var sorter = GetSorterAscending();
+            var properties = GetNodeProperties();
+            var rows = scheduler.NodesQuery(properties, filter, sorter)!;
 
-            int maxRam = (int)Math.Round((1 / 1024.0) * rows.Rows.Select(
+            var maxRam = (int)Math.Round((1 / 1024.0) * rows.Rows.Select(
                   (row) => Utils.HPCInt(row[NodePropertyIds.MemorySize])).Max());
 
-            int maxCores = rows.Rows.Select(
+            var maxCores = rows.Rows.Select(
                   (row) => Utils.HPCInt(row[NodePropertyIds.NumCores])).Max();
 
-            List<string> nodeNames = new List<string>(rows.Rows.Select(
+            var nodeNames = new List<string>(rows.Rows.Select(
                   (row) => Utils.HPCString(row[NodePropertyIds.Name])));
 
             return new ClusterInfo(
@@ -57,7 +57,7 @@ namespace Hipercow_api.Tools
         private static IFilterCollection GetFilterNonComputeNodes(
             string cluster)
         {
-            IFilterCollection nodeFilter = new FilterCollection();
+            var nodeFilter = new FilterCollection();
 
             nodeFilter.Add(
                 FilterOperator.NotEqual,
@@ -73,7 +73,7 @@ namespace Hipercow_api.Tools
         /// <returns>An ISortCollection object used for sorting in increasing node number.</returns>
         private static ISortCollection GetSorterAscending()
         {
-            ISortCollection nodeSorter = new SortCollection();
+            var nodeSorter = new SortCollection();
 
             nodeSorter.Add(
                 SortProperty.SortOrder.Ascending,

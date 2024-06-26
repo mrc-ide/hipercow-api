@@ -46,7 +46,7 @@ namespace Hipercow_api.Tools
             IFilterCollection filter,
             ISortCollection sorter)
         {
-            ISchedulerRowEnumerator? nodeEnum = this.HipercowSchedulerOpenNodeEnumerator(
+            var nodeEnum = this.HipercowSchedulerOpenNodeEnumerator(
                 properties, filter, sorter);
 
             return nodeEnum?.GetRows(int.MaxValue);

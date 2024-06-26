@@ -59,7 +59,7 @@ namespace Hipercow_api.Tools
         /// </returns>
         public static string GetDefaultQueue(string cluster)
         {
-            List<string> queues = GetQueues(cluster);
+            var queues = GetQueues(cluster);
             if (queues.Count > 0)
             {
                 return queues[0];

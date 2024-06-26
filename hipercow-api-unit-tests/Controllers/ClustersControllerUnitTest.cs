@@ -19,8 +19,8 @@ namespace Hipercow_api_unit_tests.Controllers
         [Fact]
         public void GetClusterCall_Works()
         {
-            ClustersController cc = new ClustersController(new ClusterInfoQuery());
-            List<string> clusters = cc.Get();
+            var cc = new ClustersController(new ClusterInfoQuery());
+            var clusters = cc.Get();
             Assert.Equal(new List<string> { "wpia-hn" }, clusters);
         }
 
@@ -33,9 +33,8 @@ namespace Hipercow_api_unit_tests.Controllers
         {
             Mock<IClusterInfoQuery> mockClusterInfoQuery = new();
             mockClusterInfoQuery.Setup(x => x.GetClusterInfo("wrong", null)).Returns((ClusterInfo?)null);
-            ClustersController cc = new ClustersController(mockClusterInfoQuery.Object);
-            IActionResult res = cc.Get("wrong");
-            Assert.Equivalent(cc.NotFound(), res);
+            var cc = new ClustersController(mockClusterInfoQuery.Object);
+            Assert.Equivalent(cc.NotFound(), cc.Get("wrong"));
         }
 
         /// <summary>
@@ -45,7 +44,7 @@ namespace Hipercow_api_unit_tests.Controllers
         [Fact]
         public void GetClusterinfo_Works()
         {
-            ClusterInfo potato = new ClusterInfo(
+            var potato = new ClusterInfo(
                     "potato",
                     64,
                     4,
@@ -55,9 +54,8 @@ namespace Hipercow_api_unit_tests.Controllers
 
             Mock<IClusterInfoQuery> mockClusterInfoQuery = new();
             mockClusterInfoQuery.Setup(x => x.GetClusterInfo("potato", null)).Returns(potato);
-            ClustersController cc = new ClustersController(mockClusterInfoQuery.Object);
-            IActionResult res = cc.Get("potato");
-            Assert.Equivalent(cc.Ok(potato), res);
+            var cc = new ClustersController(mockClusterInfoQuery.Object);
+            Assert.Equivalent(cc.Ok(potato), cc.Get("potato"));
         }
     }
 }

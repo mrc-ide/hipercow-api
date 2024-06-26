@@ -2,10 +2,7 @@
 
 namespace Hipercow_api_unit_tests.Tools
 {
-    using Hipercow_api.Models;
     using Hipercow_api.Tools;
-    using Microsoft.Hpc.Scheduler;
-    using Microsoft.Hpc.Scheduler.Properties;
     using Moq;
 
     /// <summary>
@@ -14,30 +11,38 @@ namespace Hipercow_api_unit_tests.Tools
     public class ClusterHandleCacheTests
     {
         /// <summary>
-        /// Test we can cache cluster handles rather than recreating every time.
+        /// Add the same schedulers twice and verify we only
+        /// have each once in the cache.
         /// </summary>
         [Fact]
-        public void ClusterHandleCache_works()
+        public void ClusterHandleCache_nodups()
         {
-            Mock<IHipercowScheduler> fakeHPC1 = new();
-            fakeHPC1.Setup(x => x.Connect(It.IsAny<string>()));
+            var fakeHPC1 = Helpers.MockScheduler();
+            var fakeHPC2 = Helpers.MockScheduler();
+            var fakeClusters = new List<string> { "fake1", "fake2" };
 
-            Mock<IHipercowScheduler> fakeHPC2 = new();
-            fakeHPC2.Setup(x => x.Connect(It.IsAny<string>()));
-
-            List<string> fakeClusters = new List<string> { "fake1", "fake2" };
-            ClusterHandleCache chc = new ClusterHandleCache();
+            var chc = new ClusterHandleCache();
             chc.InitialiseHandles(new List<string> { "fake1" }, fakeClusters, fakeHPC1.Object);
             chc.InitialiseHandles(new List<string> { "fake2" }, fakeClusters, fakeHPC2.Object);
             chc.InitialiseHandles(new List<string> { "fake1", "fake2" });
             Assert.Equal(2, chc.Count());
+        }
 
-            chc.Remove("fake1");
-            chc.Remove("fake2");
-            IHipercowScheduler? fake1 = chc.GetClusterHandle("fake1", fakeClusters, fakeHPC1.Object);
-            IHipercowScheduler? fake2 = chc.GetClusterHandle("fake2", fakeClusters, fakeHPC2.Object);
-            IHipercowScheduler? fake1b = chc.GetClusterHandle("fake1");
-            Assert.Equal(fake1, fake1b);
+        /// <summary>
+        /// Verify that getting not-yet-existing cluster handles creates,
+        /// then later returns the same object.
+        /// </summary>
+        [Fact]
+        public void ClusterHandleCache_sameinstance()
+        {
+            var fakeHPC1 = Helpers.MockScheduler();
+            var fakeHPC2 = Helpers.MockScheduler();
+            var fakeClusters = new List<string> { "fake1", "fake2" };
+            var chc = new ClusterHandleCache();
+            var fake1 = chc.GetClusterHandle("fake1", fakeClusters, fakeHPC1.Object);
+            var fake2 = chc.GetClusterHandle("fake2", fakeClusters, fakeHPC2.Object);
+            var fake1b = chc.GetClusterHandle("fake1");
+            Assert.Same(fake1, fake1b);
             Assert.NotEqual(fake1, fake2);
         }
     }

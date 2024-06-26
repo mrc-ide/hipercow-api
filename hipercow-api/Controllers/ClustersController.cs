@@ -54,7 +54,7 @@ namespace Hipercow_api.Controllers
         [HttpGet("{cluster}")]
         public IActionResult Get(string cluster)
         {
-            ClusterInfo? info = this.clusterInfoQuery.GetClusterInfo(cluster);
+            var info = this.clusterInfoQuery.GetClusterInfo(cluster);
             if (info != null)
             {
                 return this.Ok(info);

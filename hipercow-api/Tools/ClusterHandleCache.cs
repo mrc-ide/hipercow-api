@@ -62,7 +62,7 @@ namespace Hipercow_api.Tools
         /// did not exist.</returns>
         public IHipercowScheduler? GetClusterHandle(string cluster, List<string>? dideClusters = null, IHipercowScheduler? scheduler = null)
         {
-            dideClusters = (dideClusters == null) ? DideConstants.GetDideClusters() : dideClusters;
+            dideClusters = dideClusters ?? DideConstants.GetDideClusters();
             IHipercowScheduler? result;
             this.TryGetValue(cluster, out result);
             if (result != null)
@@ -72,7 +72,7 @@ namespace Hipercow_api.Tools
 
             if (dideClusters.Contains(cluster))
             {
-                scheduler = GetRealScheduler(scheduler);
+                scheduler = GetScheduler(scheduler);
                 scheduler.Connect(cluster);
                 this.Add(cluster, scheduler);
                 return scheduler;
@@ -87,9 +87,9 @@ namespace Hipercow_api.Tools
         /// in an attempt to access a real headnode.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        private static IHipercowScheduler GetRealScheduler(IHipercowScheduler? scheduler = null)
+        private static IHipercowScheduler GetScheduler(IHipercowScheduler? scheduler = null)
         {
-            return (scheduler == null) ? new HipercowScheduler() : scheduler;
+            return scheduler ?? new HipercowScheduler();
         }
     }
 }

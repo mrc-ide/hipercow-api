@@ -4,7 +4,6 @@ namespace Hipercow_api_unit_tests.Tools
 {
     using Hipercow_api.Models;
     using Hipercow_api.Tools;
-    using Microsoft.ComputeCluster;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
     using Moq;
@@ -42,27 +41,31 @@ namespace Hipercow_api_unit_tests.Tools
                 new PropertyRow(sp2),
             ];
 
-            PropertyRowSet prs = new PropertyRowSet(null, rows);
+            var prs = new PropertyRowSet(null, rows);
 
-            // Mock the cluster headnode - make the Connect and NodesQuery wrappers do nothing.
-            Mock<IHipercowScheduler> fakeHPC = new();
-            fakeHPC.Setup(x => x.Connect(It.IsAny<string>()));
+            // Mock the cluster headnode - make Connect do nothing, and NodesQuery always return our data
+            var fakeHPC = Helpers.MockScheduler();
             fakeHPC.Setup(x => x.NodesQuery(It.IsAny<IPropertyIdCollection>(), It.IsAny<IFilterCollection>(), It.IsAny<ISortCollection>())).Returns(prs).Verifiable();
 
             // Test that we can get back the fake data with an info query.
-            ClusterInfoQuery q = new ClusterInfoQuery();
-            ClusterInfo? info = q.GetClusterInfo("wpia-hn", fakeHPC.Object);
+            var info = new ClusterInfoQuery().GetClusterInfo("wpia-hn", fakeHPC.Object);
+
             Assert.NotNull(info);
             Assert.Equal(32, info.MaxRam);
             Assert.Equal(8, info.MaxCores);
-
             Assert.Equal("wpia-hn", info.Name);
             Assert.Equal("AllNodes", info.DefaultQueue);
             Assert.Equivalent(new List<string> { "node-1", "node-2" }, info.Nodes);
             Assert.Equivalent(new List<string> { "AllNodes", "Training" }, info.Queues);
+        }
 
-            // Test that an invalid scheduler returns null
-            Assert.Null(q.GetClusterInfo("potato"));
+        /// <summary>
+        /// Test that info for an invalid scheduler returns null.
+        /// </summary>
+        [Fact]
+        public void GetClusterInfo_Invalid_works()
+        {
+            Assert.Null(new ClusterInfoQuery().GetClusterInfo("potato"));
         }
     }
 }
