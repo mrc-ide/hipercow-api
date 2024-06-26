@@ -12,41 +12,22 @@ namespace Hipercow_api.Tools
     public static class DideConstants
     {
         /// <summary>
-        /// The list of clusters we currently have. Which is just one, wpia-hn.
-        /// </summary>
-        private static List<string> dideClusters = new List<string>
-        {
-                "wpia-hn",
-        };
-
-        /// <summary>
-        /// A list of clusters including a couple of fakes for testing.
-        /// </summary>
-        private static List<string> testClusters = new List<string>
-        {
-                "wpia-hn",
-                "fake1",
-                "fake2",
-        };
-
-        /// <summary>
         /// The list of queues that we publish for wpia-hn. If we add more
         /// clusters in the future, this should be come a look-up.
         /// </summary>
-        private static List<string> wpiaHnQueues = new List<string>
-        {
+        private static readonly List<string> WpiaHnQueues =
+        [
                "AllNodes",
                "Training",
-        };
+        ];
 
         /// <summary>
         /// Public function to return the list of published clusters.
         /// </summary>
-        /// <param name="testing">If true, add two more clusters, fake1 and fake2.</param>
         /// <returns>A list of strings which are the cluster names.</returns>
-        public static List<string> GetDideClusters(bool testing = false)
+        public static List<string> GetDideClusters()
         {
-            return (!testing) ? dideClusters : testClusters;
+            return ["wpia-hn"];
         }
 
         /// <summary>
@@ -59,13 +40,11 @@ namespace Hipercow_api.Tools
         /// </returns>
         public static List<string> GetQueues(string cluster)
         {
-            switch (cluster)
+            return cluster switch
             {
-                case "wpia-hn":
-                    return wpiaHnQueues;
-            }
-
-            return new List<string>();
+                "wpia-hn" => WpiaHnQueues,
+                _ => [],
+            };
         }
 
         /// <summary>
@@ -78,7 +57,7 @@ namespace Hipercow_api.Tools
         /// </returns>
         public static string GetDefaultQueue(string cluster)
         {
-            List<string> queues = GetQueues(cluster);
+            var queues = GetQueues(cluster);
             if (queues.Count > 0)
             {
                 return queues[0];

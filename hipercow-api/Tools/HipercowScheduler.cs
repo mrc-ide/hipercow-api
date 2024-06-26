@@ -2,27 +2,26 @@
 
 namespace Hipercow_api.Tools
 {
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
 
     /// <summary>
-    /// Wrapper for MSHPC Scheduler, so we can
-    /// test without needing a real cluster.
+    /// Wrapper for MS HPC Scheduler, so we can test without needing a real cluster.
+    /// Because genuine calls will require talking to a real head-node, this class
+    /// is excluded from code coverage, and will consist of minimal wrapping.
     /// </summary>
-    public class HipercowScheduler
+    [ExcludeFromCodeCoverage]
+    public class HipercowScheduler : IHipercowScheduler
     {
-        private PropertyRowSet testData = new PropertyRowSet(null, null);
-        private IScheduler? scheduler = null;
-        private bool testing = false;
+        private Scheduler? scheduler = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HipercowScheduler"/> class.
         /// </summary>
-        /// <param name="testing">Set to true if this is a virtual test cluster.</param>
-        public HipercowScheduler(bool testing = false)
+        public HipercowScheduler()
         {
-            this.scheduler = (!testing) ? new Scheduler() : null;
-            this.testing = testing;
+            this.scheduler = new Scheduler();
         }
 
         /// <summary>
@@ -35,16 +34,6 @@ namespace Hipercow_api.Tools
         }
 
         /// <summary>
-        /// Populate testData placeholder, and return this from the
-        /// NodesQuery call if testing.
-        /// </summary>
-        /// <param name="data">The PropertyRowSet of fake data.</param>
-        public void SetTestData(PropertyRowSet data)
-        {
-            this.testData = data;
-        }
-
-        /// <summary>
         /// Wrapper for IScheduler.OpenNodeEnumerator and GetRows, to
         /// return a list of rows queried from the cluster.
         /// </summary>
@@ -52,16 +41,23 @@ namespace Hipercow_api.Tools
         /// <param name="filter">The filter to use.</param>
         /// <param name="sorter">The sorting method to apply.</param>
         /// <returns>A property row set giving information about each node.</returns>
-        public PropertyRowSet NodesQuery(
+        public PropertyRowSet? NodesQuery(
             IPropertyIdCollection properties,
             IFilterCollection filter,
             ISortCollection sorter)
         {
-            ISchedulerRowEnumerator? nodeEnum = (!this.testing) ?
-                this.scheduler?.OpenNodeEnumerator(properties, filter, sorter) : null;
+            var nodeEnum = this.HipercowSchedulerOpenNodeEnumerator(
+                properties, filter, sorter);
 
-            return (nodeEnum != null) ?
-                nodeEnum.GetRows(int.MaxValue) : this.testData;
+            return nodeEnum?.GetRows(int.MaxValue);
+        }
+
+        private ISchedulerRowEnumerator? HipercowSchedulerOpenNodeEnumerator(
+            IPropertyIdCollection properties,
+            IFilterCollection filter,
+            ISortCollection sorter)
+        {
+            return this.scheduler?.OpenNodeEnumerator(properties, filter, sorter);
         }
     }
 }

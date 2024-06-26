@@ -1,16 +1,14 @@
 // Copyright (c) Imperial College London. All rights reserved.
-using System.Diagnostics.CodeAnalysis;
-
-[assembly: ExcludeFromCodeCoverage]
-
 namespace Hipercow_api
 {
+    using System.Diagnostics.CodeAnalysis;
     using Hipercow_api.Tools;
 
     /// <summary>
     /// Hipercow_api main class.
     /// </summary>
-    public class Program
+    [ExcludeFromCodeCoverage]
+    public partial class Program
     {
         /// <summary>
         /// Hipercow_api Main method.
@@ -26,7 +24,8 @@ namespace Hipercow_api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddSingleton<IClusterInfoQuery, ClusterInfoQuery>();
+            builder.Services.AddSingleton<IHipercowScheduler, HipercowScheduler>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -42,7 +41,7 @@ namespace Hipercow_api
 
             app.MapControllers();
 
-            ClusterHandleCache.InitialiseHandles(DideConstants.GetDideClusters());
+            ClusterHandleCache.GetSingletonClusterHandleCache().InitialiseHandles(DideConstants.GetDideClusters());
             app.Run();
         }
     }

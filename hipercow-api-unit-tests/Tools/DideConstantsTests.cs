@@ -16,7 +16,7 @@ namespace Hipercow_api_unit_tests.Tools
         [Fact]
         public void GetDideClusters_works()
         {
-            List<string> res = DideConstants.GetDideClusters();
+            var res = DideConstants.GetDideClusters();
             Assert.Single(res);
             Assert.Contains("wpia-hn", res);
         }
@@ -27,7 +27,7 @@ namespace Hipercow_api_unit_tests.Tools
         [Fact]
         public void GetQueues_works()
         {
-            List<string> res = DideConstants.GetQueues("wpia-hn");
+            var res = DideConstants.GetQueues("wpia-hn");
             Assert.Equal(2, res.Count);
             Assert.Contains("AllNodes", res);
             Assert.Contains("Training", res);
