@@ -2,7 +2,6 @@
 
 namespace Hipercow_api_unit_tests.Tools
 {
-    using Hipercow_api.Models;
     using Hipercow_api.Tools;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
@@ -22,18 +21,18 @@ namespace Hipercow_api_unit_tests.Tools
             // Below is fake data in the form that MS HPC
             // might return if we asked it.
             StoreProperty[] sp1 =
-            {
+            [
                 new StoreProperty(NodePropertyIds.Name, "node-1"),
                 new StoreProperty(NodePropertyIds.MemorySize, 32 * 1024),
                 new StoreProperty(NodePropertyIds.NumCores, 4),
-            };
+            ];
 
             StoreProperty[] sp2 =
-            {
+            [
                 new StoreProperty(NodePropertyIds.Name, "node-2"),
                 new StoreProperty(NodePropertyIds.MemorySize, 16 * 1024),
                 new StoreProperty(NodePropertyIds.NumCores, 8),
-            };
+            ];
 
             PropertyRow[] rows =
             [

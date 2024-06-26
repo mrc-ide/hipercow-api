@@ -14,7 +14,7 @@ namespace Hipercow_api.Tools
     [ExcludeFromCodeCoverage]
     public class HipercowScheduler : IHipercowScheduler
     {
-        private IScheduler? scheduler = null;
+        private Scheduler? scheduler = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HipercowScheduler"/> class.

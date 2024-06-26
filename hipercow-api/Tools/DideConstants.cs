@@ -15,11 +15,11 @@ namespace Hipercow_api.Tools
         /// The list of queues that we publish for wpia-hn. If we add more
         /// clusters in the future, this should be come a look-up.
         /// </summary>
-        private static List<string> wpiaHnQueues = new List<string>
-        {
+        private static readonly List<string> WpiaHnQueues =
+        [
                "AllNodes",
                "Training",
-        };
+        ];
 
         /// <summary>
         /// Public function to return the list of published clusters.
@@ -27,7 +27,7 @@ namespace Hipercow_api.Tools
         /// <returns>A list of strings which are the cluster names.</returns>
         public static List<string> GetDideClusters()
         {
-            return new List<string> { "wpia-hn" };
+            return ["wpia-hn"];
         }
 
         /// <summary>
@@ -40,13 +40,11 @@ namespace Hipercow_api.Tools
         /// </returns>
         public static List<string> GetQueues(string cluster)
         {
-            switch (cluster)
+            return cluster switch
             {
-                case "wpia-hn":
-                    return wpiaHnQueues;
-            }
-
-            return new List<string>();
+                "wpia-hn" => WpiaHnQueues,
+                _ => [],
+            };
         }
 
         /// <summary>

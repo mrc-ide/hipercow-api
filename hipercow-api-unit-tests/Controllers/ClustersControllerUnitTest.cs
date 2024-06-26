@@ -5,7 +5,6 @@ namespace Hipercow_api_unit_tests.Controllers
     using Hipercow_api.Controllers;
     using Hipercow_api.Models;
     using Hipercow_api.Tools;
-    using Microsoft.AspNetCore.Mvc;
     using Moq;
 
     /// <summary>
@@ -21,7 +20,7 @@ namespace Hipercow_api_unit_tests.Controllers
         {
             var cc = new ClustersController(new ClusterInfoQuery());
             var clusters = cc.Get();
-            Assert.Equal(new List<string> { "wpia-hn" }, clusters);
+            Assert.Equal(["wpia-hn"], clusters);
         }
 
         /// <summary>
@@ -48,8 +47,8 @@ namespace Hipercow_api_unit_tests.Controllers
                     "potato",
                     64,
                     4,
-                    new List<string> { "A", "B" },
-                    new List<string> { "Q1", "Q2" },
+                    ["A", "B"],
+                    ["Q1", "Q2"],
                     "Q1");
 
             Mock<IClusterInfoQuery> mockClusterInfoQuery = new();

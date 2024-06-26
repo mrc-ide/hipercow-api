@@ -15,10 +15,7 @@ namespace Hipercow_api.Tools
         /// <inheritdoc/>
         public ClusterInfo? GetClusterInfo(string cluster, IHipercowScheduler? scheduler = null)
         {
-            if (scheduler == null)
-            {
-                scheduler = ClusterHandleCache.GetSingletonClusterHandleCache().GetClusterHandle(cluster)!;
-            }
+            scheduler = scheduler ?? ClusterHandleCache.GetSingletonClusterHandleCache().GetClusterHandle(cluster)!;
 
             if (scheduler == null)
             {
@@ -53,49 +50,49 @@ namespace Hipercow_api.Tools
         /// the head node.
         /// </summary>
         /// <param name="cluster">The cluster (headnode) name.</param>
-        /// <returns>An IFilterCollection object used for filtering.</returns>
-        private static IFilterCollection GetFilterNonComputeNodes(
+        /// <returns>A FilterCollection object used for filtering.</returns>
+        private static FilterCollection GetFilterNonComputeNodes(
             string cluster)
         {
-            var nodeFilter = new FilterCollection();
-
-            nodeFilter.Add(
-                FilterOperator.NotEqual,
-                PropId.Node_Name,
-                cluster);
-
-            return nodeFilter;
+            return new FilterCollection
+            {
+                {
+                    FilterOperator.NotEqual,
+                    PropId.Node_Name,
+                    cluster
+                },
+            };
         }
 
         /// <summary>
         /// Helper to return a node sorter in alphabetical ascending order.
         /// </summary>
-        /// <returns>An ISortCollection object used for sorting in increasing node number.</returns>
-        private static ISortCollection GetSorterAscending()
+        /// <returns>A SortCollection object used for sorting in increasing node number.</returns>
+        private static SortCollection GetSorterAscending()
         {
-            var nodeSorter = new SortCollection();
-
-            nodeSorter.Add(
-                SortProperty.SortOrder.Ascending,
-                NodePropertyIds.Name);
-
-            return nodeSorter;
+            return new SortCollection
+            {
+                {
+                    SortProperty.SortOrder.Ascending,
+                    NodePropertyIds.Name
+                },
+            };
         }
 
         /// <summary>
         /// Helper to return the set of properties we want to see when asking
         /// for information about a cluster.
         /// </summary>
-        /// <returns>An IProprtyIdcollection including the node name, number of cores,
+        /// <returns>An ProprtyIdcollection including the node name, number of cores,
         /// and memory size, which we can query for.</returns>
-        private static IPropertyIdCollection GetNodeProperties()
+        private static PropertyIdCollection GetNodeProperties()
         {
-            return new PropertyIdCollection()
-            {
+            return
+            [
                 NodePropertyIds.Name,
                 NodePropertyIds.NumCores,
                 NodePropertyIds.MemorySize,
-            };
+            ];
         }
     }
 }

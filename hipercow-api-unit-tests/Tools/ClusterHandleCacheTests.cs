@@ -25,7 +25,7 @@ namespace Hipercow_api_unit_tests.Tools
             chc.InitialiseHandles(new List<string> { "fake1" }, fakeClusters, fakeHPC1.Object);
             chc.InitialiseHandles(new List<string> { "fake2" }, fakeClusters, fakeHPC2.Object);
             chc.InitialiseHandles(new List<string> { "fake1", "fake2" });
-            Assert.Equal(2, chc.Count());
+            Assert.Equal(2, chc.Count);
         }
 
         /// <summary>

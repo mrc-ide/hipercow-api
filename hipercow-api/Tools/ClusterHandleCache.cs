@@ -15,6 +15,7 @@ namespace Hipercow_api.Tools
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterHandleCache"/> class.
+        /// Only used in testing; in the app, call GetSingletonClusterHandleCache().
         /// </summary>
         public ClusterHandleCache()
         {
