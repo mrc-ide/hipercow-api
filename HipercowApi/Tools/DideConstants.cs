@@ -1,6 +1,6 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api.Tools
+namespace HipercowApi.Tools
 {
     /// <summary>
     /// A set of constants specific to our DIDE clusters. The intention is that

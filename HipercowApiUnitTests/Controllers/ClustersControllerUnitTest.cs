@@ -1,10 +1,10 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api_unit_tests.Controllers
+namespace HipercowApiUnitTests.Controllers
 {
-    using Hipercow_api.Controllers;
-    using Hipercow_api.Models;
-    using Hipercow_api.Tools;
+    using HipercowApi.Controllers;
+    using HipercowApi.Models;
+    using HipercowApi.Tools;
     using Moq;
 
     /// <summary>

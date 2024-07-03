@@ -22,10 +22,10 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - name: Install dependencies for hipercow-api
-      run: dotnet add hipercow-api package Microsoft.HPC.SDK --version 6.3.8025-beta
-    - name: Install dependencies for hipercow-api-unit-tests
-      run: dotnet add hipercow-api-unit-tests package Microsoft.HPC.SDK --version 6.3.8025-beta
+    - name: Install dependencies for HipercowApi
+      run: dotnet add HipercowApi package Microsoft.HPC.SDK --version 6.3.8025-beta
+    - name: Install dependencies for HipercowApiUnitTests
+      run: dotnet add HipercowApiUnitTests package Microsoft.HPC.SDK --version 6.3.8025-beta
     - name: Install dotnet-coverage
       run: dotnet tool install --global dotnet-coverage
     - name: Build

@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api_unit_tests.Tools
+namespace HipercowApiUnitTests.Tools
 {
-    using Hipercow_api.Tools;
+    using HipercowApi.Tools;
 
     /// <summary>
     /// Tests for the DideConstants class.

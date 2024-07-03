@@ -1,9 +1,9 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api.Controllers
+namespace HipercowApi.Controllers
 {
-    using Hipercow_api.Models;
-    using Hipercow_api.Tools;
+    using HipercowApi.Models;
+    using HipercowApi.Tools;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
