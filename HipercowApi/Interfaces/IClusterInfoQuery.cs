@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Imperial College London. All rights reserved.
 
-namespace Hipercow_api.Tools
+namespace HipercowApi.Tools
 {
-    using Hipercow_api.Models;
+    using HipercowApi.Models;
 
     /// <summary>
     /// Interface wrapper for GetClusterInfo, which fetches cluster

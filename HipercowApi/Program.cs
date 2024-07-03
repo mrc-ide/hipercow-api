@@ -1,8 +1,8 @@
 // Copyright (c) Imperial College London. All rights reserved.
-namespace Hipercow_api
+namespace HipercowApi
 {
     using System.Diagnostics.CodeAnalysis;
-    using Hipercow_api.Tools;
+    using HipercowApi.Tools;
 
     /// <summary>
     /// Hipercow_api main class.
@@ -11,7 +11,7 @@ namespace Hipercow_api
     public partial class Program
     {
         /// <summary>
-        /// Hipercow_api Main method.
+        /// HipercowApi Main method.
         /// </summary>
         /// <param name="args">Command-line arguments to main - not used.</param>
         public static void Main(string[] args)

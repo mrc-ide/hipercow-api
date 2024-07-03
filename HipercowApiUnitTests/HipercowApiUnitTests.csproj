@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>Hipercow_api_unit_tests</RootNamespace>
+    <RootNamespace>HipercowApiUnitTests</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\hipercow-api\hipercow-api.csproj" />
+    <ProjectReference Include="..\HipercowApi\HipercowApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
