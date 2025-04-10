@@ -11,7 +11,6 @@ namespace HipercowApi.Models
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NodeLoad"/> class.
-        /// The constructor for NodeLoad.
         /// </summary>
         /// <param name="name">The name of the node.</param>
         /// <param name="coresInUse">The number of cores in use.</param>

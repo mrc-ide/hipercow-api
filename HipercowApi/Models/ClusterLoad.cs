@@ -9,7 +9,6 @@ namespace HipercowApi.Models
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterLoad"/> class.
-        /// The constructor for ClusterLoad.
         /// </summary>
         /// <param name="name">The name of the cluster.</param>
         /// <param name="nodeLoads">
