@@ -6,3 +6,10 @@
 <!-- badges: end -->
 
 This is the .NET Core Web api to talk to our MS HPC Cluster.
+
+# Endpoints
+
+* `/api/v1/Clusters` - List of cluster headnodes we support.
+* `/api/v1/Clusters/{cluster}` - Cluster name, maxRam, maxCores, nodes list, queues list and defaultQueue.
+* `/api/v1/ClusterLoad/{cluster}` - Cluster name, list of nodeLoads - each of which is name, coresInUse, nodeCores and state.
+
