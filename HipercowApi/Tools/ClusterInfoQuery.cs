@@ -22,7 +22,7 @@ namespace HipercowApi.Tools
                 return null;
             }
 
-            var filter = GetFilterNonComputeNodes(cluster);
+            var filter = Utils.GetFilterNonComputeNodes(cluster);
             var sorter = GetSorterAscending();
             var properties = GetNodeProperties();
             var rows = scheduler.NodesQuery(properties, filter, sorter)!;
@@ -43,25 +43,6 @@ namespace HipercowApi.Tools
                 nodeNames,
                 DideConstants.GetQueues(cluster),
                 DideConstants.GetDefaultQueue(cluster));
-        }
-
-        /// <summary>
-        /// Helper to return a search filter, which when used queries for all nodes except
-        /// the head node.
-        /// </summary>
-        /// <param name="cluster">The cluster (headnode) name.</param>
-        /// <returns>A FilterCollection object used for filtering.</returns>
-        private static FilterCollection GetFilterNonComputeNodes(
-            string cluster)
-        {
-            return new FilterCollection
-            {
-                {
-                    FilterOperator.NotEqual,
-                    PropId.Node_Name,
-                    cluster
-                },
-            };
         }
 
         /// <summary>

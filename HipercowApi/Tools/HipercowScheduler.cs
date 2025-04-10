@@ -15,6 +15,7 @@ namespace HipercowApi.Tools
     public class HipercowScheduler : IHipercowScheduler
     {
         private Scheduler? scheduler = null;
+        private SchedulerCollection<IHipercowSchedulerNode> testData = new SchedulerCollection<IHipercowSchedulerNode>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HipercowScheduler"/> class.
@@ -22,6 +23,16 @@ namespace HipercowApi.Tools
         public HipercowScheduler()
         {
             this.scheduler = new Scheduler();
+        }
+
+        /// <summary>
+        /// Inject test data that getNodeList will return.
+        /// </summary>
+        /// <param name="data">A collection of HipercowSchedulerNode.</param>
+        public void SetTestNodeList(SchedulerCollection<IHipercowSchedulerNode> data)
+        {
+            this.testData.Clear();
+            this.testData = data;
         }
 
         /// <summary>
@@ -50,6 +61,32 @@ namespace HipercowApi.Tools
                 properties, filter, sorter);
 
             return nodeEnum?.GetRows(int.MaxValue);
+        }
+
+        /// <summary>
+        /// Wrapper for IScheduler.GetNodeList, to
+        /// return a list of nodes, and their current states.
+        /// </summary>
+        /// <param name="filter">The filter to use.</param>
+        /// <param name="sorter">The sorting method to apply.</param>
+        /// <returns>A ISchedulerCollection of ISchedulerNodes.</returns>
+        public ISchedulerCollection GetNodeList(
+            IFilterCollection? filter = null,
+            ISortCollection? sorter = null)
+        {
+            SchedulerCollection<HipercowSchedulerNode> res = new SchedulerCollection<HipercowSchedulerNode>();
+            if (this.scheduler is null)
+            {
+                return res;
+            }
+
+            ISchedulerCollection hpcRes = this.scheduler.GetNodeList(filter, sorter);
+            foreach (ISchedulerNode isn in hpcRes)
+            {
+                res.Add(new HipercowSchedulerNode(isn));
+            }
+
+            return res;
         }
 
         private ISchedulerRowEnumerator? HipercowSchedulerOpenNodeEnumerator(

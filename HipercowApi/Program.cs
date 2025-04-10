@@ -25,6 +25,7 @@ namespace HipercowApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<IClusterInfoQuery, ClusterInfoQuery>();
+            builder.Services.AddSingleton<IClusterLoadQuery, ClusterLoadQuery>();
             builder.Services.AddSingleton<IHipercowScheduler, HipercowScheduler>();
             var app = builder.Build();
 

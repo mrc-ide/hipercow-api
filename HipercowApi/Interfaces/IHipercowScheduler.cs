@@ -29,5 +29,16 @@ namespace HipercowApi.Tools
             IPropertyIdCollection properties,
             IFilterCollection filter,
             ISortCollection sorter);
+
+        /// <summary>
+        /// Wrapper for IScheduler.GetNodeList, to
+        /// return a list of nodes and their current states.
+        /// </summary>
+        /// <param name="filter">The filter to use.</param>
+        /// <param name="sorter">The sorting method to apply.</param>
+        /// <returns>A ISchedulerCollection of ISchedulerNodes.</returns>
+        public ISchedulerCollection GetNodeList(
+            IFilterCollection? filter,
+            ISortCollection? sorter);
     }
 }

@@ -3,6 +3,7 @@
 namespace HipercowApi.Tools
 {
     using System.Diagnostics.CodeAnalysis;
+    using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
 
     /// <summary>
@@ -35,6 +36,25 @@ namespace HipercowApi.Tools
         public static int HPCInt(StoreProperty sp)
         {
             return int.Parse(HPCString(sp));
+        }
+
+        /// <summary>
+        /// Helper to return a search filter, which when used queries for all nodes except
+        /// the head node.
+        /// </summary>
+        /// <param name="cluster">The cluster (headnode) name.</param>
+        /// <returns>A FilterCollection object used for filtering.</returns>
+        public static FilterCollection GetFilterNonComputeNodes(
+            string cluster)
+        {
+            return new FilterCollection
+            {
+                {
+                    FilterOperator.NotEqual,
+                    PropId.Node_Name,
+                    cluster
+                },
+            };
         }
     }
 }
