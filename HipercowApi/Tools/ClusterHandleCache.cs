@@ -9,9 +9,9 @@ namespace HipercowApi.Tools
     /// handle for named cluster quickly, without having to recreate
     /// it every time (which is slow).
     /// </summary>
-    public class ClusterHandleCache : Dictionary<string, IHipercowScheduler>
+    public class ClusterHandleCache : IClusterHandleCache
     {
-        private static ClusterHandleCache? singletonClusterHandleCache;
+        private Dictionary<string, IScheduler> handles;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterHandleCache"/> class.
@@ -19,21 +19,7 @@ namespace HipercowApi.Tools
         /// </summary>
         public ClusterHandleCache()
         {
-            new Dictionary<string, IHipercowScheduler>();
-        }
-
-        /// <summary>
-        /// Return the singleton cluster handle cache.
-        /// </summary>
-        /// <returns>The static cluster handle cache for the API.</returns>
-        public static ClusterHandleCache GetSingletonClusterHandleCache()
-        {
-            if (singletonClusterHandleCache == null)
-            {
-                singletonClusterHandleCache = new ClusterHandleCache();
-            }
-
-            return singletonClusterHandleCache;
+            this.handles = new Dictionary<string, IScheduler>();
         }
 
         /// <summary>
@@ -41,13 +27,12 @@ namespace HipercowApi.Tools
         /// Called at the start to create all our handles in advance.
         /// </summary>
         /// <param name="clusters">List of clusters to get handles for.</param>
-        /// <param name="dideClusters">For testing only - the list of acceptable cluster names.</param>
-        /// <param name="scheduler">For testing only - a scheduler object for mocking.</param>
-        public void InitialiseHandles(List<string> clusters, List<string>? dideClusters = null, IHipercowScheduler? scheduler = null)
+        [ExcludeFromCodeCoverage]
+        public void InitialiseHandles(List<string> clusters)
         {
             foreach (string cluster in clusters)
             {
-                this.GetClusterHandle(cluster, dideClusters, scheduler);
+                this.GetClusterHandle(cluster);
             }
         }
 
@@ -57,15 +42,14 @@ namespace HipercowApi.Tools
         /// cluster name was invalid.
         /// </summary>
         /// <param name="cluster">The name of the cluster.</param>
-        /// <param name="dideClusters">For testing only - the list of acceptable cluster names.</param>
-        /// <param name="scheduler">For testing only - a scheduler object for mocking.</param>
         /// <returns>A handle to that cluster, or null if the named cluster does not exist.
         /// did not exist.</returns>
-        public IHipercowScheduler? GetClusterHandle(string cluster, List<string>? dideClusters = null, IHipercowScheduler? scheduler = null)
+        [ExcludeFromCodeCoverage]
+        public IScheduler? GetClusterHandle(string cluster)
         {
-            dideClusters = dideClusters ?? DideConstants.GetDideClusters();
-            IHipercowScheduler? result;
-            this.TryGetValue(cluster, out result);
+            List<string> dideClusters = DideConstants.GetDideClusters();
+            IScheduler? result;
+            this.handles.TryGetValue(cluster, out result);
             if (result != null)
             {
                 return result;
@@ -73,24 +57,13 @@ namespace HipercowApi.Tools
 
             if (dideClusters.Contains(cluster))
             {
-                scheduler = GetScheduler(scheduler);
+                Scheduler scheduler = new Scheduler();
                 scheduler.Connect(cluster);
-                this.Add(cluster, scheduler);
+                this.handles.Add(cluster, scheduler);
                 return scheduler;
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// If the scheduler is null, then create a scheduler; this needs
-        /// excluding from coverage testing, because it can only result
-        /// in an attempt to access a real headnode.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        private static IHipercowScheduler GetScheduler(IHipercowScheduler? scheduler = null)
-        {
-            return scheduler ?? new HipercowScheduler();
         }
     }
 }

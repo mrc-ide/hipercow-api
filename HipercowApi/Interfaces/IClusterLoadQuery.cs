@@ -3,6 +3,7 @@
 namespace HipercowApi.Tools
 {
     using HipercowApi.Models;
+    using Microsoft.Hpc.Scheduler;
 
     /// <summary>
     /// Interface wrapper for GetClusterLoad, which fetches the current
@@ -14,8 +15,8 @@ namespace HipercowApi.Tools
         /// Fetch information about the current load of a named cluster.
         /// </summary>
         /// <param name="cluster">The name of the cluster - currently only wpia-hn.</param>
-        /// <param name="scheduler">Mainly for testing - the scheduler object to query.</param>
+        /// <param name="scheduler">The scheduler to query.</param>
         /// <returns>A ClusterLoad object if the named cluster exists, otherwise null.</returns>
-        public ClusterLoad? GetClusterLoad(string cluster, IHipercowScheduler? scheduler = null);
+        public ClusterLoad? GetClusterLoad(string cluster, IScheduler scheduler);
     }
 }

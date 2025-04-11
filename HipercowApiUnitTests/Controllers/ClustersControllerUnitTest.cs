@@ -5,6 +5,8 @@ namespace HipercowApiUnitTests.Controllers
     using HipercowApi.Controllers;
     using HipercowApi.Models;
     using HipercowApi.Tools;
+    using Microsoft.Hpc.Scheduler;
+    using Microsoft.Hpc.Scheduler.Properties;
     using Moq;
 
     /// <summary>
@@ -18,7 +20,7 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetClusterCall_Works()
         {
-            var cc = new ClustersController(new ClusterInfoQuery());
+            var cc = new ClustersController(new ClusterInfoQuery(), new ClusterHandleCache(), new Utils());
             var clusters = cc.Get();
             Assert.Equal(["wpia-hn"], clusters);
         }
@@ -30,10 +32,8 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetWrongCluster_ReturnsNotFound()
         {
-            Mock<IClusterInfoQuery> mockClusterInfoQuery = new();
-            mockClusterInfoQuery.Setup(x => x.GetClusterInfo("wrong", null)).Returns((ClusterInfo?)null);
-            var cc = new ClustersController(mockClusterInfoQuery.Object);
-            Assert.Equivalent(cc.NotFound(), cc.Get("wrong"));
+            ClustersController cc = new ClustersController(new ClusterInfoQuery(), new ClusterHandleCache(), new Utils());
+            Assert.Equivalent(cc.NotFound(), cc.Get("potato"));
         }
 
         /// <summary>
@@ -43,18 +43,46 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetClusterinfo_Works()
         {
-            var potato = new ClusterInfo(
-                    "potato",
-                    64,
-                    4,
-                    ["A", "B"],
-                    ["Q1", "Q2"],
-                    "Q1");
+            StoreProperty[] sp1 =
+            [
+                new StoreProperty(NodePropertyIds.Name, "node-1"),
+                new StoreProperty(NodePropertyIds.MemorySize, 32 * 1024),
+                new StoreProperty(NodePropertyIds.NumCores, 4),
+            ];
 
-            Mock<IClusterInfoQuery> mockClusterInfoQuery = new();
-            mockClusterInfoQuery.Setup(x => x.GetClusterInfo("potato", null)).Returns(potato);
-            var cc = new ClustersController(mockClusterInfoQuery.Object);
-            Assert.Equivalent(cc.Ok(potato), cc.Get("potato"));
+            StoreProperty[] sp2 =
+            [
+                new StoreProperty(NodePropertyIds.Name, "node-2"),
+                new StoreProperty(NodePropertyIds.MemorySize, 16 * 1024),
+                new StoreProperty(NodePropertyIds.NumCores, 8),
+            ];
+
+            PropertyRow[] rows =
+            [
+                new PropertyRow(sp1),
+                new PropertyRow(sp2),
+            ];
+
+            var prs = new PropertyRowSet(null, rows);
+
+            var mockScheduler = new Mock<IScheduler>();
+            mockScheduler.Setup(x => x.Connect("potato")).Verifiable();
+
+            var mockHandleCache = new Mock<IClusterHandleCache>();
+            mockHandleCache.Setup(x => x.GetClusterHandle("potato")).Returns(mockScheduler.Object);
+
+            Mock<IUtils> mockUtils = new();
+            mockUtils.Setup(x => x.NodesQuery(
+               It.IsAny<IScheduler>(),
+               It.IsAny<IPropertyIdCollection>(),
+               It.IsAny<IFilterCollection>(),
+               It.IsAny<ISortCollection>())).Returns(prs);
+
+            var cc = new ClustersController(new ClusterInfoQuery(), mockHandleCache.Object, mockUtils.Object);
+            var res = cc.Get("potato");
+
+            ClusterInfo expected = new ClusterInfo("potato", 32, 8, ["node-1", "node-2"], [], string.Empty);
+            Assert.Equivalent(cc.Ok(expected), cc.Get("potato"));
         }
     }
 }

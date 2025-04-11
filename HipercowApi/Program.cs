@@ -3,6 +3,7 @@ namespace HipercowApi
 {
     using System.Diagnostics.CodeAnalysis;
     using HipercowApi.Tools;
+    using Microsoft.Hpc.Scheduler;
 
     /// <summary>
     /// Hipercow_api main class.
@@ -26,7 +27,8 @@ namespace HipercowApi
             builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<IClusterInfoQuery, ClusterInfoQuery>();
             builder.Services.AddSingleton<IClusterLoadQuery, ClusterLoadQuery>();
-            builder.Services.AddSingleton<IHipercowScheduler, HipercowScheduler>();
+            builder.Services.AddSingleton<IClusterHandleCache, ClusterHandleCache>();
+            builder.Services.AddSingleton<IUtils, Utils>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -42,7 +44,6 @@ namespace HipercowApi
 
             app.MapControllers();
 
-            ClusterHandleCache.GetSingletonClusterHandleCache().InitialiseHandles(DideConstants.GetDideClusters());
             app.Run();
         }
     }

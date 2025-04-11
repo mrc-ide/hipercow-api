@@ -13,19 +13,12 @@ namespace HipercowApi.Tools
     public class ClusterInfoQuery : IClusterInfoQuery
     {
         /// <inheritdoc/>
-        public ClusterInfo? GetClusterInfo(string cluster, IHipercowScheduler? scheduler = null)
+        public ClusterInfo GetClusterInfo(string cluster, IScheduler scheduler, IUtils utils)
         {
-            scheduler = scheduler ?? ClusterHandleCache.GetSingletonClusterHandleCache().GetClusterHandle(cluster)!;
-
-            if (scheduler == null)
-            {
-                return null;
-            }
-
             var filter = Utils.GetFilterNonComputeNodes(cluster);
             var sorter = GetSorterAscending();
             var properties = GetNodeProperties();
-            var rows = scheduler.NodesQuery(properties, filter, sorter)!;
+            var rows = utils.NodesQuery(scheduler, properties, filter, sorter)!;
 
             var maxRam = (int)Math.Round((1 / 1024.0) * rows.Rows.Select(
                   (row) => Utils.HPCInt(row[NodePropertyIds.MemorySize])).Max());

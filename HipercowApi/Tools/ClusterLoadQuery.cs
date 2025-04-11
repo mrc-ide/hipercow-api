@@ -13,33 +13,27 @@ namespace HipercowApi.Tools
     public class ClusterLoadQuery : IClusterLoadQuery
     {
         /// <inheritdoc/>
-        public ClusterLoad? GetClusterLoad(string cluster, IHipercowScheduler? scheduler = null)
+        public ClusterLoad? GetClusterLoad(string cluster, IScheduler scheduler)
         {
-            scheduler = scheduler ?? ClusterHandleCache.GetSingletonClusterHandleCache().GetClusterHandle(cluster)!;
             var nodeLoads = new List<NodeLoad>();
-            if (scheduler == null)
-            {
-                return null;
-            }
-
             var filter = Utils.GetFilterNonComputeNodes(cluster);
             var nodeList = scheduler.GetNodeList(filter, null);
 
-            foreach (HipercowSchedulerNode node in nodeList)
+            foreach (ISchedulerNode node in nodeList)
             {
                 var cores = node.GetCores();
                 int busy = 0;
 
-                foreach (HipercowSchedulerCore core in cores)
+                foreach (ISchedulerCore core in cores)
                 {
-                    busy += (core.GetState() == SchedulerCoreState.Busy) ? 1 : 0;
+                    busy += (core.State == SchedulerCoreState.Busy) ? 1 : 0;
                 }
 
                 nodeLoads.Add(new NodeLoad(
-                    node.GetName(),
+                    node.Name,
                     busy,
-                    node.GetNumCores(),
-                    node.GetStateName(node.GetState())));
+                    node.NumberOfCores,
+                    node.State == NodeState.Online ? "Online" : "Offline"));
             }
 
             return new ClusterLoad(

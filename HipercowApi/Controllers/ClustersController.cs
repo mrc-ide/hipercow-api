@@ -5,6 +5,7 @@ namespace HipercowApi.Controllers
     using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Hpc.Scheduler;
 
     /// <summary>
     /// The /clusters and /clusters/xxx endpoints provide the list of clusters
@@ -18,15 +19,24 @@ namespace HipercowApi.Controllers
         /// An object implementing IClusterInfoQuery, responsible for returning
         /// the list of clusters, or information on a specific cluster.
         /// </summary>
-        private IClusterInfoQuery clusterInfoQuery = new ClusterInfoQuery();
+        private IClusterInfoQuery clusterInfoQuery;
+        private IClusterHandleCache clusterHandleCache;
+        private IUtils utils;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClustersController"/> class.
         /// </summary>
-        /// <param name="clusterInfoQuery">For testing only.</param>
-        public ClustersController(IClusterInfoQuery clusterInfoQuery)
+        /// <param name="clusterInfoQuery">The cluster info query object.</param>
+        /// <param name="clusterHandleCache">The cluster handle cache.</param>
+        /// <param name="utils">Units instance for moq.</param>
+        public ClustersController(
+            IClusterInfoQuery clusterInfoQuery,
+            IClusterHandleCache clusterHandleCache,
+            IUtils utils)
         {
             this.clusterInfoQuery = clusterInfoQuery;
+            this.clusterHandleCache = clusterHandleCache;
+            this.utils = utils;
         }
 
         /// <summary>
@@ -54,13 +64,10 @@ namespace HipercowApi.Controllers
         [HttpGet("{cluster}")]
         public IActionResult Get(string cluster)
         {
-            var info = this.clusterInfoQuery.GetClusterInfo(cluster);
-            if (info != null)
-            {
-                return this.Ok(info);
-            }
-
-            return this.NotFound();
+            IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster)!;
+            return scheduler is null ?
+                this.NotFound() :
+                this.Ok(this.clusterInfoQuery.GetClusterInfo(cluster, scheduler, this.utils));
         }
     }
 }

@@ -4,6 +4,7 @@ namespace HipercowApi.Controllers
 {
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Hpc.Scheduler;
 
     /// <summary>
     /// The /clusters and /clusters/xxx endpoints provide the list of clusters
@@ -17,15 +18,20 @@ namespace HipercowApi.Controllers
         /// An object implementing IClusterLoadQuery, responsible for returning
         /// the current load of nodes on a specific cluster.
         /// </summary>
-        private IClusterLoadQuery clusterLoadQuery = new ClusterLoadQuery();
+        private IClusterLoadQuery clusterLoadQuery;
+        private IClusterHandleCache clusterHandleCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterLoadController"/> class.
         /// </summary>
-        /// <param name="clusterLoadQuery">For testing only.</param>
-        public ClusterLoadController(IClusterLoadQuery clusterLoadQuery)
+        /// <param name="clusterLoadQuery">The ClusterLoadQuery object.</param>
+        /// <param name="clusterHandleCache">The ClusterHandleCache object.</param>
+        public ClusterLoadController(
+            IClusterLoadQuery clusterLoadQuery,
+            IClusterHandleCache clusterHandleCache)
         {
             this.clusterLoadQuery = clusterLoadQuery;
+            this.clusterHandleCache = clusterHandleCache;
         }
 
         /// <summary>
@@ -41,13 +47,10 @@ namespace HipercowApi.Controllers
         [HttpGet("{cluster}")]
         public IActionResult Get(string cluster)
         {
-            var info = this.clusterLoadQuery.GetClusterLoad(cluster);
-            if (info != null)
-            {
-                return this.Ok(info);
-            }
-
-            return this.NotFound();
+            IScheduler scheduler = this.clusterHandleCache.GetClusterHandle(cluster)!;
+            return scheduler is null ?
+                this.NotFound() :
+                this.Ok(this.clusterLoadQuery.GetClusterLoad(cluster, scheduler));
         }
     }
 }
