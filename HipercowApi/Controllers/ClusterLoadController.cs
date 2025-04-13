@@ -14,18 +14,14 @@ namespace HipercowApi.Controllers
     [Route("api/v1/[controller]")]
     public class ClusterLoadController : ControllerBase
     {
-        /// <summary>
-        /// An object implementing IClusterLoadQuery, responsible for returning
-        /// the current load of nodes on a specific cluster.
-        /// </summary>
         private IClusterLoadQuery clusterLoadQuery;
         private IClusterHandleCache clusterHandleCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterLoadController"/> class.
         /// </summary>
-        /// <param name="clusterLoadQuery">The ClusterLoadQuery object.</param>
-        /// <param name="clusterHandleCache">The ClusterHandleCache object.</param>
+        /// <param name="clusterLoadQuery">The ClusterLoadQuery object for dependency injection. Contains GetClusterLoad function.</param>
+        /// <param name="clusterHandleCache">The ClusterHandleCache object so we can retrieve the connected scheduler object for the requested cluster.</param>
         public ClusterLoadController(
             IClusterLoadQuery clusterLoadQuery,
             IClusterHandleCache clusterHandleCache)

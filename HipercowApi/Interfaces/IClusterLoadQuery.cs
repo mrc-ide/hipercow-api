@@ -6,8 +6,8 @@ namespace HipercowApi.Tools
     using Microsoft.Hpc.Scheduler;
 
     /// <summary>
-    /// Interface wrapper for GetClusterLoad, which fetches the current
-    /// load of nodes on a given cluster. (Currently only wpia-hn.)
+    /// Interface wrapper for GetClusterLoad, which fetches a list of nodes and
+    /// their current load, for a given cluster. (Currently only wpia-hn.)
     /// </summary>
     public interface IClusterLoadQuery
     {
@@ -15,8 +15,8 @@ namespace HipercowApi.Tools
         /// Fetch information about the current load of a named cluster.
         /// </summary>
         /// <param name="cluster">The name of the cluster - currently only wpia-hn.</param>
-        /// <param name="scheduler">The scheduler to query.</param>
-        /// <returns>A ClusterLoad object if the named cluster exists, otherwise null.</returns>
-        public ClusterLoad? GetClusterLoad(string cluster, IScheduler scheduler);
+        /// <param name="scheduler">The connected scheduler object to query.</param>
+        /// <returns>A ClusterLoad object. (The cluster is sure to exist if we get this far).</returns>
+        public ClusterLoad GetClusterLoad(string cluster, IScheduler scheduler);
     }
 }

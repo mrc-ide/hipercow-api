@@ -51,7 +51,7 @@ namespace HipercowApiUnitTests.Controllers
             mockNode2.Setup(x => x.NumberOfCores).Returns(2);
 
             SchedulerCollection<ISchedulerNode> mockNodeList = new SchedulerCollection<ISchedulerNode>
-                { mockNode1.Object, mockNode2.Object};
+                { mockNode1.Object, mockNode2.Object };
 
             var mockScheduler = new Mock<IScheduler>();
             mockScheduler.Setup(x => x.Connect("potato")).Verifiable();

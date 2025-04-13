@@ -15,10 +15,6 @@ namespace HipercowApi.Controllers
     [Route("api/v1/[controller]")]
     public class ClustersController : ControllerBase
     {
-        /// <summary>
-        /// An object implementing IClusterInfoQuery, responsible for returning
-        /// the list of clusters, or information on a specific cluster.
-        /// </summary>
         private IClusterInfoQuery clusterInfoQuery;
         private IClusterHandleCache clusterHandleCache;
         private IUtils utils;
@@ -26,9 +22,9 @@ namespace HipercowApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="ClustersController"/> class.
         /// </summary>
-        /// <param name="clusterInfoQuery">The cluster info query object.</param>
-        /// <param name="clusterHandleCache">The cluster handle cache.</param>
-        /// <param name="utils">Units instance for moq.</param>
+        /// <param name="clusterInfoQuery">The cluster info query object for dependency injection. Contains GetClusterInfo function.</param>
+        /// <param name="clusterHandleCache">The cluster handle cache so we can look up the connected scheduler object for the requested cluster.</param>
+        /// <param name="utils">A utils instance for dependency injection, so we can mock out Utils.NodesQuery in testing.</param>
         public ClustersController(
             IClusterInfoQuery clusterInfoQuery,
             IClusterHandleCache clusterHandleCache,
@@ -43,7 +39,7 @@ namespace HipercowApi.Controllers
         /// Endpoint to return the list of available clusters.
         /// </summary>
         /// <returns>
-        /// A list of cluster names.
+        /// A list of cluster names - currently hard coded into the API.
         /// </returns>
         [HttpGet]
         public List<string> Get()

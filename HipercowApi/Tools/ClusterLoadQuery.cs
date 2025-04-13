@@ -3,6 +3,7 @@
 namespace HipercowApi.Tools
 {
     using HipercowApi.Models;
+    using Microsoft.AspNetCore.SignalR;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
 
@@ -13,7 +14,7 @@ namespace HipercowApi.Tools
     public class ClusterLoadQuery : IClusterLoadQuery
     {
         /// <inheritdoc/>
-        public ClusterLoad? GetClusterLoad(string cluster, IScheduler scheduler)
+        public ClusterLoad GetClusterLoad(string cluster, IScheduler scheduler)
         {
             var nodeLoads = new List<NodeLoad>();
             var filter = Utils.GetFilterNonComputeNodes(cluster);

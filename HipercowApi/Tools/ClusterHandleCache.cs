@@ -15,7 +15,6 @@ namespace HipercowApi.Tools
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterHandleCache"/> class.
-        /// Only used in testing; in the app, call GetSingletonClusterHandleCache().
         /// </summary>
         public ClusterHandleCache()
         {
@@ -30,10 +29,7 @@ namespace HipercowApi.Tools
         [ExcludeFromCodeCoverage]
         public void InitialiseHandles(List<string> clusters)
         {
-            foreach (string cluster in clusters)
-            {
-                this.GetClusterHandle(cluster);
-            }
+            clusters.ForEach(cluster => this.GetClusterHandle(cluster));
         }
 
         /// <summary>

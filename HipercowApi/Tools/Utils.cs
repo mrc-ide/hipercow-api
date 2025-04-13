@@ -61,7 +61,7 @@ namespace HipercowApi.Tools
         /// Wrapper for IScheduler.OpenNodeEnumerator and GetRows, to
         /// return a list of rows queried from the cluster.
         /// </summary>
-        /// <param name="scheduler">The scheduler to query.</param>
+        /// <param name="scheduler">The connected scheduler to query.</param>
         /// <param name="properties">The properties to retrieve.</param>
         /// <param name="filter">The filter to use.</param>
         /// <param name="sorter">The sorting method to apply.</param>

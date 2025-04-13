@@ -10,10 +10,10 @@ namespace HipercowApi.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterLoad"/> class.
         /// </summary>
-        /// <param name="name">The name of the cluster.</param>
+        /// <param name="name">The name of the requested cluster.</param>
         /// <param name="nodeLoads">
-        /// A list of NodeLoad objects, giving the current cores and RAM in use,
-        /// and the capacity of each node.
+        /// A list of NodeLoad objects, giving the current number of busy cores,
+        /// total number of cores, and state (online or offline) of each node.
         /// </param>
         public ClusterLoad(
             string name,
