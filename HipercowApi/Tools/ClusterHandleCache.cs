@@ -11,14 +11,18 @@ namespace HipercowApi.Tools
     /// </summary>
     public class ClusterHandleCache : IClusterHandleCache
     {
-        private Dictionary<string, IScheduler> handles;
+        private readonly Dictionary<string, IScheduler> handles;
+        private readonly ISchedulerFactory schedulerFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterHandleCache"/> class.
         /// </summary>
-        public ClusterHandleCache()
+        /// <param name="schedulerFactory">Factory for creating the HPC scheduler object.</param>
+        public ClusterHandleCache(ISchedulerFactory? schedulerFactory = null)
         {
+            schedulerFactory = schedulerFactory ?? new SchedulerFactory();
             this.handles = new Dictionary<string, IScheduler>();
+            this.schedulerFactory = schedulerFactory;
         }
 
         /// <summary>
@@ -32,15 +36,7 @@ namespace HipercowApi.Tools
             clusters.ForEach(cluster => this.GetClusterHandle(cluster));
         }
 
-        /// <summary>
-        /// Return a handle to a named cluster, using the cache where possible,
-        /// creating a new handle if it doesn't exist, or returning null if the
-        /// cluster name was invalid.
-        /// </summary>
-        /// <param name="cluster">The name of the cluster.</param>
-        /// <returns>A handle to that cluster, or null if the named cluster does not exist.
-        /// did not exist.</returns>
-        [ExcludeFromCodeCoverage]
+        /// <inheritdoc/>
         public IScheduler? GetClusterHandle(string cluster)
         {
             List<string> dideClusters = DideConstants.GetDideClusters();
@@ -53,7 +49,7 @@ namespace HipercowApi.Tools
 
             if (dideClusters.Contains(cluster))
             {
-                Scheduler scheduler = new Scheduler();
+                IScheduler scheduler = this.schedulerFactory.NewScheduler();
                 scheduler.Connect(cluster);
                 this.handles.Add(cluster, scheduler);
                 return scheduler;

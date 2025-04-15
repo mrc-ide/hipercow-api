@@ -28,6 +28,7 @@ namespace HipercowApi
             builder.Services.AddSingleton<IClusterInfoQuery, ClusterInfoQuery>();
             builder.Services.AddSingleton<IClusterLoadQuery, ClusterLoadQuery>();
             builder.Services.AddSingleton<IClusterHandleCache, ClusterHandleCache>();
+            builder.Services.AddSingleton<ISchedulerFactory, SchedulerFactory>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
