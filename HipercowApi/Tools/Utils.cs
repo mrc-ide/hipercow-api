@@ -22,7 +22,7 @@ namespace HipercowApi.Tools
         /// </summary>
         /// <param name="sp">
         /// A Microsoft.Hpc.Scheduler.Properties.StoreProperty, returned when
-        /// querying the cluster
+        /// querying the cluster.
         /// </param>
         /// <returns>
         /// A string which either has a value or is empty, but is not null.

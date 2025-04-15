@@ -18,7 +18,7 @@ namespace HipercowApi.Controllers
         private readonly IClusterHandleCache clusterHandleCache;
 
         /// <summary>
-        /// Initializes a new instance of the 
+        /// Initializes a new instance of the
         /// <see cref="ClustersController"/> class.
         /// </summary>
         /// <param name="clusterInfoQuery">
