@@ -61,7 +61,7 @@ namespace HipercowApiUnitTests.Controllers
         public void GetWrongCluster_ReturnsNotFound()
         {
             ClusterLoadController cc = new(
-                new ClusterLoadQuery(), 
+                new ClusterLoadQuery(),
                 new ClusterHandleCache());
             Assert.Equivalent(cc.NotFound(), cc.Get("potato"));
         }

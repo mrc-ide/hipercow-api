@@ -21,7 +21,7 @@ namespace HipercowApiUnitTests.Controllers
         public void GetClusterCall_Works()
         {
             var cc = new ClustersController(
-                new ClusterInfoQuery(), 
+                new ClusterInfoQuery(),
                 new ClusterHandleCache());
             var clusters = cc.Get();
             Assert.Equal(["wpia-hn"], clusters);
