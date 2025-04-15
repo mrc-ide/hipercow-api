@@ -32,7 +32,7 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetWrongCluster_ReturnsNotFound()
         {
-            ClustersController cc = new ClustersController(new ClusterInfoQuery(), new ClusterHandleCache());
+            ClustersController cc = new(new ClusterInfoQuery(), new ClusterHandleCache());
             Assert.Equivalent(cc.NotFound(), cc.Get("potato"));
         }
 
@@ -44,23 +44,21 @@ namespace HipercowApiUnitTests.Controllers
         public void GetClusterinfo_Works()
         {
             PropertyRow[] rows = [FakeNodeInfo("node-1", 32, 4), FakeNodeInfo("node-2", 16, 8)];
-            PropertyRowSet prs = new PropertyRowSet(null, rows);
-            var mockISchedulerRowEnumerator = new Mock<ISchedulerRowEnumerator>();
+            PropertyRowSet prs = new(null, rows);
+            Mock<ISchedulerRowEnumerator> mockISchedulerRowEnumerator = new();
             mockISchedulerRowEnumerator.Setup(x => x.GetRows(It.IsAny<int>())).Returns(prs);
 
-            var mockScheduler = new Mock<IScheduler>();
+            Mock<IScheduler> mockScheduler = new();
             mockScheduler.Setup(x => x.Connect("potato")).Verifiable();
             mockScheduler.Setup(x => x.OpenNodeEnumerator(
                 It.IsAny<IPropertyIdCollection>(),
                 It.IsAny<IFilterCollection>(),
                 It.IsAny<ISortCollection>())).Returns(mockISchedulerRowEnumerator.Object);
 
-            var mockHandleCache = new Mock<IClusterHandleCache>();
+            Mock<IClusterHandleCache> mockHandleCache = new();
             mockHandleCache.Setup(x => x.GetClusterHandle("potato")).Returns(mockScheduler.Object);
 
-            var cc = new ClustersController(new ClusterInfoQuery(), mockHandleCache.Object);
-            var res = cc.Get("potato");
-
+            ClustersController cc = new(new ClusterInfoQuery(), mockHandleCache.Object);
             ClusterInfo expected = new ClusterInfo("potato", 32, 8, ["node-1", "node-2"], [], string.Empty);
             Assert.Equivalent(cc.Ok(expected), cc.Get("potato"));
         }

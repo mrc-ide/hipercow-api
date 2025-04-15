@@ -14,8 +14,8 @@ namespace HipercowApi.Controllers
     [Route("api/v1/[controller]")]
     public class ClusterLoadController : ControllerBase
     {
-        private IClusterLoadQuery clusterLoadQuery;
-        private IClusterHandleCache clusterHandleCache;
+        private readonly IClusterLoadQuery clusterLoadQuery;
+        private readonly IClusterHandleCache clusterHandleCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClusterLoadController"/> class.

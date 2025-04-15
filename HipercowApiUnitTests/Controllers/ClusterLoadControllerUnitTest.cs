@@ -21,11 +21,11 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetClusterLoad_Works()
         {
-            SchedulerCollection<ISchedulerNode> mockNodeList = new SchedulerCollection<ISchedulerNode>
-            {
+            SchedulerCollection<ISchedulerNode> mockNodeList =
+            [
                 FakeNode("node-1", FakeCores([SchedulerCoreState.Busy, SchedulerCoreState.Idle, SchedulerCoreState.Offline]), NodeState.Online),
                 FakeNode("node-2", FakeCores([SchedulerCoreState.Busy, SchedulerCoreState.Idle]), NodeState.Offline),
-            };
+            ];
 
             var mockScheduler = new Mock<IScheduler>();
             mockScheduler.Setup(x => x.Connect("potato")).Verifiable();
@@ -36,9 +36,9 @@ namespace HipercowApiUnitTests.Controllers
 
             var cc = new ClusterLoadController(new ClusterLoadQuery(), mockHandleCache.Object);
 
-            NodeLoad nl1 = new NodeLoad("node-1", 1, 3, "Online");
-            NodeLoad nl2 = new NodeLoad("node-2", 1, 2, "Offline");
-            ClusterLoad cl = new ClusterLoad("potato", [nl1, nl2]);
+            NodeLoad nl1 = new("node-1", 1, 3, "Online");
+            NodeLoad nl2 = new("node-2", 1, 2, "Offline");
+            ClusterLoad cl = new("potato", [nl1, nl2]);
             Assert.Equivalent(cc.Ok(cl), cc.Get("potato"));
         }
 
@@ -49,7 +49,7 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetWrongCluster_ReturnsNotFound()
         {
-            ClusterLoadController cc = new ClusterLoadController(new ClusterLoadQuery(), new ClusterHandleCache());
+            ClusterLoadController cc = new(new ClusterLoadQuery(), new ClusterHandleCache());
             Assert.Equivalent(cc.NotFound(), cc.Get("potato"));
         }
 
@@ -62,7 +62,7 @@ namespace HipercowApiUnitTests.Controllers
 
         private static SchedulerCollection<ISchedulerCore> FakeCores(List<SchedulerCoreState> states)
         {
-            SchedulerCollection<ISchedulerCore> schedulerCores = new SchedulerCollection<ISchedulerCore>();
+            SchedulerCollection<ISchedulerCore> schedulerCores = new();
             states.ForEach(state => schedulerCores.Add(FakeCore(state)));
             return schedulerCores;
         }

@@ -6,7 +6,7 @@ namespace HipercowApi.Tools
     using Microsoft.Hpc.Scheduler;
 
     /// <summary>
-    /// Miscellaneous support helper functions to make the code more readable elsewhere.
+    /// Factory for creating HPC scheduler objects.
     /// </summary>
     public class SchedulerFactory : ISchedulerFactory
     {

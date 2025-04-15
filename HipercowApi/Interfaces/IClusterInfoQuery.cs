@@ -4,7 +4,6 @@ namespace HipercowApi.Tools
 {
     using HipercowApi.Models;
     using Microsoft.Hpc.Scheduler;
-    using Microsoft.Hpc.Scheduler.Properties;
 
     /// <summary>
     /// Interface wrapper for GetClusterInfo, which fetches cluster

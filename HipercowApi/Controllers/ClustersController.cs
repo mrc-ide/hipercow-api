@@ -2,7 +2,6 @@
 
 namespace HipercowApi.Controllers
 {
-    using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Hpc.Scheduler;
@@ -15,8 +14,8 @@ namespace HipercowApi.Controllers
     [Route("api/v1/[controller]")]
     public class ClustersController : ControllerBase
     {
-        private IClusterInfoQuery clusterInfoQuery;
-        private IClusterHandleCache clusterHandleCache;
+        private readonly IClusterInfoQuery clusterInfoQuery;
+        private readonly IClusterHandleCache clusterHandleCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClustersController"/> class.

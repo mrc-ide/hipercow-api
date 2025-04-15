@@ -9,21 +9,14 @@ namespace HipercowApi.Tools
     /// handle for named cluster quickly, without having to recreate
     /// it every time (which is slow).
     /// </summary>
-    public class ClusterHandleCache : IClusterHandleCache
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ClusterHandleCache"/> class.
+    /// </remarks>
+    /// <param name="schedulerFactory">Factory for creating the HPC scheduler object.</param>
+    public class ClusterHandleCache(ISchedulerFactory? schedulerFactory = null) : IClusterHandleCache
     {
-        private readonly Dictionary<string, IScheduler> handles;
-        private readonly ISchedulerFactory schedulerFactory;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClusterHandleCache"/> class.
-        /// </summary>
-        /// <param name="schedulerFactory">Factory for creating the HPC scheduler object.</param>
-        public ClusterHandleCache(ISchedulerFactory? schedulerFactory = null)
-        {
-            schedulerFactory = schedulerFactory ?? new SchedulerFactory();
-            this.handles = new Dictionary<string, IScheduler>();
-            this.schedulerFactory = schedulerFactory;
-        }
+        private readonly Dictionary<string, IScheduler> handles = [];
+        private readonly ISchedulerFactory schedulerFactory = schedulerFactory ?? new SchedulerFactory();
 
         /// <summary>
         /// Initialise the dictionary of handles with a list of clusters.
@@ -40,8 +33,7 @@ namespace HipercowApi.Tools
         public IScheduler? GetClusterHandle(string cluster)
         {
             List<string> dideClusters = DideConstants.GetDideClusters();
-            IScheduler? result;
-            this.handles.TryGetValue(cluster, out result);
+            this.handles.TryGetValue(cluster, out IScheduler? result);
             if (result != null)
             {
                 return result;
