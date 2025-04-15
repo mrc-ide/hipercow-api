@@ -14,9 +14,16 @@ namespace HipercowApi.Tools
         /// <summary>
         /// Fetch information about the current load of a named cluster.
         /// </summary>
-        /// <param name="cluster">The name of the cluster - currently only wpia-hn.</param>
-        /// <param name="scheduler">The connected scheduler object to query.</param>
-        /// <returns>A ClusterLoad object. (The cluster is sure to exist if we get this far).</returns>
+        /// <param name="cluster">
+        /// The name of the cluster - currently only wpia-hn.
+        /// </param>
+        /// <param name="scheduler">
+        /// The connected scheduler object to query.
+        /// </param>
+        /// <returns>
+        /// A ClusterLoad object. (The cluster is sure to exist
+        /// if we get this far)
+        /// .</returns>
         public ClusterLoad GetClusterLoad(string cluster, IScheduler scheduler);
     }
 }

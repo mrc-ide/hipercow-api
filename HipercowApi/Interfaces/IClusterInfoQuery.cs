@@ -14,9 +14,16 @@ namespace HipercowApi.Tools
         /// <summary>
         /// Fetch information about a named cluster.
         /// </summary>
-        /// <param name="cluster">The name of the cluster (currently only wpia-hn).</param>
-        /// <param name="scheduler">The handle to the connected scheduler.</param>
-        /// <returns>A ClusterInfo object. (The cluster is sure to exist if it gets this far).</returns>
+        /// <param name="cluster">
+        /// The name of the cluster (currently only wpia-hn).
+        /// </param>
+        /// <param name="scheduler">
+        /// The handle to the connected scheduler.
+        /// </param>
+        /// <returns>
+        /// A ClusterInfo object. (The cluster is sure to exist if
+        /// it gets this far).
+        /// </returns>
         public ClusterInfo GetClusterInfo(string cluster, IScheduler scheduler);
     }
 }

@@ -13,8 +13,13 @@ namespace HipercowApi.Tools
         /// <summary>
         /// Fetch information about a named cluster.
         /// </summary>
-        /// <param name="cluster">The name of the cluster - currently only wpia-hn.</param>
-        /// <returns>A IScheduler object if the named cluster exists, otherwise null.</returns>
+        /// <param name="cluster">
+        /// The name of the cluster - currently only wpia-hn.
+        /// </param>
+        /// <returns>
+        /// A IScheduler object if the named cluster exists,
+        /// otherwise null.
+        /// </returns>
         public IScheduler? GetClusterHandle(string cluster);
     }
 }

@@ -7,20 +7,26 @@ namespace HipercowApi.Tools
     using Microsoft.Hpc.Scheduler.Properties;
 
     /// <summary>
-    /// Miscellaneous support helper functions to make the code more readable elsewhere.
+    /// Miscellaneous support helper functions to make the code more
+    /// readable elsewhere.
     /// </summary>
     public class Utils
     {
         /// <summary>
-        /// Wrapper around Microsoft.Hpc.Scheduler.Properties; return a string if
-        /// possible, otherwise return an empty string, rather than null. In reality,
-        /// a non-null StoreProperty can't have a null value or ToString - but I
-        /// think it is not declared that way - hence code coverage disabled for
-        /// this one-liner, as otherwise I get a partial line coverage that I can't
-        /// complete.
+        /// Wrapper around Microsoft.Hpc.Scheduler.Properties; return a string
+        /// if possible, otherwise return an empty string, rather than null.
+        /// In reality, a non-null StoreProperty can't have a null value or
+        /// ToString - but I think it is not declared that way - hence code coverage
+        /// disabled for this one-liner, as otherwise I get a partial line coverage
+        /// that I can't complete.
         /// </summary>
-        /// <param name="sp">A Microsoft.Hpc.Scheduler.Properties.StoreProperty, returned when querying the cluster.</param>
-        /// <returns>A string which either has a value or is empty, but is not null.</returns>
+        /// <param name="sp">
+        /// A Microsoft.Hpc.Scheduler.Properties.StoreProperty, returned when
+        /// querying the cluster
+        /// </param>
+        /// <returns>
+        /// A string which either has a value or is empty, but is not null.
+        /// </returns>
         [ExcludeFromCodeCoverage]
         public static string HPCString(StoreProperty sp)
         {
@@ -31,7 +37,10 @@ namespace HipercowApi.Tools
         /// Wrapper around Microsoft.Hpc.Scheduler.Properties; return an int if
         /// possible. This is guaranteed to be an int for all valid usage.
         /// </summary>
-        /// <param name="sp">A Microsoft.Hpc.Scheduler.Properties.StoreProperty, returned when querying the cluster.</param>
+        /// <param name="sp">
+        /// A Microsoft.Hpc.Scheduler.Properties.StoreProperty, returned when
+        /// querying the cluster.
+        /// </param>
         /// <returns>An integer value for the property.</returns>
         public static int HPCInt(StoreProperty sp)
         {
@@ -39,8 +48,8 @@ namespace HipercowApi.Tools
         }
 
         /// <summary>
-        /// Helper to return a search filter, which when used queries for all nodes except
-        /// the head node.
+        /// Helper to return a search filter, which when used queries for all nodes
+        /// except the head node.
         /// </summary>
         /// <param name="cluster">The cluster (headnode) name.</param>
         /// <returns>A FilterCollection object used for filtering.</returns>
@@ -81,7 +90,9 @@ namespace HipercowApi.Tools
         /// <summary>
         /// Helper to return a node sorter in alphabetical ascending order.
         /// </summary>
-        /// <returns>A SortCollection object used for sorting in increasing node number.</returns>
+        /// <returns>
+        /// A SortCollection object used for sorting in increasing node number.
+        /// </returns>
         public static SortCollection GetSorterAscending()
         {
             return new SortCollection

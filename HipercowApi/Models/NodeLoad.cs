@@ -14,7 +14,7 @@ namespace HipercowApi.Models
         /// </summary>
         /// <param name="name">The name of the node.</param>
         /// <param name="coresInUse">The number of cores in use.</param>
-        /// <param name="nodeCores">The total number of cores on the node.</param>
+        /// <param name="nodeCores">The total cores on the node.</param>
         /// <param name="state">Current node state as a string.</param>
         public NodeLoad(
             string name,

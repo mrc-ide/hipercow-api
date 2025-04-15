@@ -21,20 +21,31 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetClusterLoad_Works()
         {
+            SchedulerCoreState busy = SchedulerCoreState.Busy;
+            SchedulerCoreState idle = SchedulerCoreState.Idle;
+            SchedulerCoreState offline = SchedulerCoreState.Offline;
+            NodeState n_online = NodeState.Online;
+            NodeState n_offline = NodeState.Offline;
+
             SchedulerCollection<ISchedulerNode> mockNodeList =
             [
-                FakeNode("node-1", FakeCores([SchedulerCoreState.Busy, SchedulerCoreState.Idle, SchedulerCoreState.Offline]), NodeState.Online),
-                FakeNode("node-2", FakeCores([SchedulerCoreState.Busy, SchedulerCoreState.Idle]), NodeState.Offline),
+                FakeNode("node-1", FakeCores([busy, idle, offline]), n_online),
+                FakeNode("node-2", FakeCores([busy, idle]), n_offline),
             ];
 
             var mockScheduler = new Mock<IScheduler>();
             mockScheduler.Setup(x => x.Connect("potato")).Verifiable();
-            mockScheduler.Setup(x => x.GetNodeList(It.IsAny<IFilterCollection>(), It.IsAny<ISortCollection>())).Returns(mockNodeList);
+            mockScheduler.Setup(x => x.GetNodeList(
+                It.IsAny<IFilterCollection>(),
+                It.IsAny<ISortCollection>())).Returns(mockNodeList);
 
             var mockHandleCache = new Mock<IClusterHandleCache>();
-            mockHandleCache.Setup(x => x.GetClusterHandle("potato")).Returns(mockScheduler.Object);
+            mockHandleCache.Setup(x => x.GetClusterHandle("potato")).
+                                         Returns(mockScheduler.Object);
 
-            var cc = new ClusterLoadController(new ClusterLoadQuery(), mockHandleCache.Object);
+            var cc = new ClusterLoadController(
+                new ClusterLoadQuery(),
+                mockHandleCache.Object);
 
             NodeLoad nl1 = new("node-1", 1, 3, "Online");
             NodeLoad nl2 = new("node-2", 1, 2, "Offline");
@@ -49,7 +60,9 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetWrongCluster_ReturnsNotFound()
         {
-            ClusterLoadController cc = new(new ClusterLoadQuery(), new ClusterHandleCache());
+            ClusterLoadController cc = new(
+                new ClusterLoadQuery(), 
+                new ClusterHandleCache());
             Assert.Equivalent(cc.NotFound(), cc.Get("potato"));
         }
 
@@ -60,14 +73,18 @@ namespace HipercowApiUnitTests.Controllers
             return mockCore.Object;
         }
 
-        private static SchedulerCollection<ISchedulerCore> FakeCores(List<SchedulerCoreState> states)
+        private static SchedulerCollection<ISchedulerCore> FakeCores(
+            List<SchedulerCoreState> states)
         {
             SchedulerCollection<ISchedulerCore> schedulerCores = new();
             states.ForEach(state => schedulerCores.Add(FakeCore(state)));
             return schedulerCores;
         }
 
-        private static ISchedulerNode FakeNode(string name, SchedulerCollection<ISchedulerCore> cores, NodeState state)
+        private static ISchedulerNode FakeNode(
+            string name,
+            SchedulerCollection<ISchedulerCore> cores,
+            NodeState state)
         {
             var mockNode = new Mock<ISchedulerNode>();
             mockNode.Setup(x => x.GetCores()).Returns(cores);

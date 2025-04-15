@@ -20,14 +20,14 @@ namespace HipercowApi.Tools
             var properties = Utils.GetNodeProperties();
             var rows = Utils.NodesQuery(scheduler, properties, filter, sorter)!;
 
-            var maxRam = (int)Math.Round((1 / 1024.0) * rows.Rows.Select(
-                  (row) => Utils.HPCInt(row[NodePropertyIds.MemorySize])).Max());
+            var maxRam = (int)Math.Round(1.0 / 1024.0 * rows.Rows.Select(
+                (row) => Utils.HPCInt(row[NodePropertyIds.MemorySize])).Max());
 
             var maxCores = rows.Rows.Select(
-                  (row) => Utils.HPCInt(row[NodePropertyIds.NumCores])).Max();
+                (row) => Utils.HPCInt(row[NodePropertyIds.NumCores])).Max();
 
             var nodeNames = new List<string>(rows.Rows.Select(
-                  (row) => Utils.HPCString(row[NodePropertyIds.Name])));
+                (row) => Utils.HPCString(row[NodePropertyIds.Name])));
 
             return new ClusterInfo(
                 cluster,

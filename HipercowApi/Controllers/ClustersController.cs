@@ -18,10 +18,16 @@ namespace HipercowApi.Controllers
         private readonly IClusterHandleCache clusterHandleCache;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClustersController"/> class.
+        /// Initializes a new instance of the 
+        /// <see cref="ClustersController"/> class.
         /// </summary>
-        /// <param name="clusterInfoQuery">The cluster info query object for dependency injection. Contains GetClusterInfo function.</param>
-        /// <param name="clusterHandleCache">The cluster handle cache so we can look up the connected scheduler object for the requested cluster.</param>
+        /// <param name="clusterInfoQuery">
+        /// The cluster info query object for dependency injection.
+        /// Contains GetClusterInfo function.
+        /// </param>
+        /// <param name="clusterHandleCache">The cluster handle cache so we can look up
+        /// the connected scheduler object for the requested cluster.
+        /// </param>
         public ClustersController(
             IClusterInfoQuery clusterInfoQuery,
             IClusterHandleCache clusterHandleCache)

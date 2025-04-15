@@ -10,19 +10,26 @@ namespace HipercowApi.Tools
     /// it every time (which is slow).
     /// </summary>
     /// <remarks>
-    /// Initializes a new instance of the <see cref="ClusterHandleCache"/> class.
+    /// Initializes a new instance of the
+    /// <see cref="ClusterHandleCache"/> class.
     /// </remarks>
-    /// <param name="schedulerFactory">Factory for creating the HPC scheduler object.</param>
-    public class ClusterHandleCache(ISchedulerFactory? schedulerFactory = null) : IClusterHandleCache
+    /// <param name="schedulerFactory">
+    /// Factory for creating the HPC scheduler object.
+    /// </param>
+    public class ClusterHandleCache(
+        ISchedulerFactory? schedulerFactory = null) : IClusterHandleCache
     {
         private readonly Dictionary<string, IScheduler> handles = [];
-        private readonly ISchedulerFactory schedulerFactory = schedulerFactory ?? new SchedulerFactory();
+        private readonly ISchedulerFactory schedulerFactory =
+            schedulerFactory ?? new SchedulerFactory();
 
         /// <summary>
         /// Initialise the dictionary of handles with a list of clusters.
         /// Called at the start to create all our handles in advance.
         /// </summary>
-        /// <param name="clusters">List of clusters to get handles for.</param>
+        /// <param name="clusters">
+        /// List of clusters to get handles for.
+        /// </param>
         [ExcludeFromCodeCoverage]
         public void InitialiseHandles(List<string> clusters)
         {
