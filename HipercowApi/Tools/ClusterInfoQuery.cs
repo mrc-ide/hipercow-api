@@ -13,12 +13,12 @@ namespace HipercowApi.Tools
     public class ClusterInfoQuery : IClusterInfoQuery
     {
         /// <inheritdoc/>
-        public ClusterInfo GetClusterInfo(string cluster, IScheduler scheduler, IUtils utils)
+        public ClusterInfo GetClusterInfo(string cluster, IScheduler scheduler)
         {
             var filter = Utils.GetFilterNonComputeNodes(cluster);
-            var sorter = GetSorterAscending();
-            var properties = GetNodeProperties();
-            var rows = utils.NodesQuery(scheduler, properties, filter, sorter)!;
+            var sorter = Utils.GetSorterAscending();
+            var properties = Utils.GetNodeProperties();
+            var rows = Utils.NodesQuery(scheduler, properties, filter, sorter)!;
 
             var maxRam = (int)Math.Round((1 / 1024.0) * rows.Rows.Select(
                   (row) => Utils.HPCInt(row[NodePropertyIds.MemorySize])).Max());
@@ -36,37 +36,6 @@ namespace HipercowApi.Tools
                 nodeNames,
                 DideConstants.GetQueues(cluster),
                 DideConstants.GetDefaultQueue(cluster));
-        }
-
-        /// <summary>
-        /// Helper to return a node sorter in alphabetical ascending order.
-        /// </summary>
-        /// <returns>A SortCollection object used for sorting in increasing node number.</returns>
-        private static SortCollection GetSorterAscending()
-        {
-            return new SortCollection
-            {
-                {
-                    SortProperty.SortOrder.Ascending,
-                    NodePropertyIds.Name
-                },
-            };
-        }
-
-        /// <summary>
-        /// Helper to return the set of properties we want to see when asking
-        /// for information about a cluster.
-        /// </summary>
-        /// <returns>An ProprtyIdcollection including the node name, number of cores,
-        /// and memory size, which we can query for.</returns>
-        private static PropertyIdCollection GetNodeProperties()
-        {
-            return
-            [
-                NodePropertyIds.Name,
-                NodePropertyIds.NumCores,
-                NodePropertyIds.MemorySize,
-            ];
         }
     }
 }

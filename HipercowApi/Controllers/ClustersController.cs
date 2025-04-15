@@ -17,22 +17,18 @@ namespace HipercowApi.Controllers
     {
         private IClusterInfoQuery clusterInfoQuery;
         private IClusterHandleCache clusterHandleCache;
-        private IUtils utils;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClustersController"/> class.
         /// </summary>
         /// <param name="clusterInfoQuery">The cluster info query object for dependency injection. Contains GetClusterInfo function.</param>
         /// <param name="clusterHandleCache">The cluster handle cache so we can look up the connected scheduler object for the requested cluster.</param>
-        /// <param name="utils">A utils instance for dependency injection, so we can mock out Utils.NodesQuery in testing.</param>
         public ClustersController(
             IClusterInfoQuery clusterInfoQuery,
-            IClusterHandleCache clusterHandleCache,
-            IUtils utils)
+            IClusterHandleCache clusterHandleCache)
         {
             this.clusterInfoQuery = clusterInfoQuery;
             this.clusterHandleCache = clusterHandleCache;
-            this.utils = utils;
         }
 
         /// <summary>
@@ -63,7 +59,7 @@ namespace HipercowApi.Controllers
             IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster)!;
             return scheduler is null ?
                 this.NotFound() :
-                this.Ok(this.clusterInfoQuery.GetClusterInfo(cluster, scheduler, this.utils));
+                this.Ok(this.clusterInfoQuery.GetClusterInfo(cluster, scheduler));
         }
     }
 }
