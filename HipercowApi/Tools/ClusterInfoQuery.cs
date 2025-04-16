@@ -15,7 +15,7 @@ namespace HipercowApi.Tools
         /// <inheritdoc/>
         public ClusterInfo GetClusterInfo(string cluster, IScheduler scheduler)
         {
-            var filter = Utils.GetFilterNonComputeNodes(cluster);
+            var filter = Utils.GetExcludeNonComputeNodesFilter(cluster);
             var sorter = Utils.GetSorterAscending();
             var properties = Utils.GetNodeProperties();
             var rows = Utils.NodesQuery(scheduler, properties, filter, sorter)!;

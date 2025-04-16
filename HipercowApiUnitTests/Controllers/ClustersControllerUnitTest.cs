@@ -22,7 +22,7 @@ namespace HipercowApiUnitTests.Controllers
         {
             var cc = new ClustersController(
                 new ClusterInfoQuery(),
-                new ClusterHandleCache());
+                new ClusterHandleCache(new SchedulerFactory()));
             var clusters = cc.Get();
             Assert.Equal(["wpia-hn"], clusters);
         }
@@ -35,8 +35,8 @@ namespace HipercowApiUnitTests.Controllers
         public void GetWrongCluster_ReturnsNotFound()
         {
             ClustersController cc = new(
-                new ClusterInfoQuery(), 
-                new ClusterHandleCache());
+                new ClusterInfoQuery(),
+                new ClusterHandleCache(new SchedulerFactory()));
             Assert.Equivalent(cc.NotFound(), cc.Get("potato"));
         }
 
@@ -68,7 +68,7 @@ namespace HipercowApiUnitTests.Controllers
                     Returns(mockScheduler.Object);
 
             ClustersController cc = new(
-                new ClusterInfoQuery(), 
+                new ClusterInfoQuery(),
                 mockHandleCache.Object);
             ClusterInfo expected = new ClusterInfo(
                 "potato", 32, 8, ["node-1", "node-2"], [], string.Empty);

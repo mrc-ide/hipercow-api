@@ -27,10 +27,9 @@ namespace HipercowApi.Tools
         /// <returns>
         /// A string which either has a value or is empty, but is not null.
         /// </returns>
-        [ExcludeFromCodeCoverage]
         public static string HPCString(StoreProperty sp)
         {
-            return sp.Value?.ToString() ?? string.Empty;
+            return sp.Value.ToString()!;
         }
 
         /// <summary>
@@ -53,7 +52,7 @@ namespace HipercowApi.Tools
         /// </summary>
         /// <param name="cluster">The cluster (headnode) name.</param>
         /// <returns>A FilterCollection object used for filtering.</returns>
-        public static FilterCollection GetFilterNonComputeNodes(
+        public static FilterCollection GetExcludeNonComputeNodesFilter(
             string cluster)
         {
             return new FilterCollection

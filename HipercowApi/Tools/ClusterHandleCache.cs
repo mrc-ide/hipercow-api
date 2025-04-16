@@ -17,11 +17,10 @@ namespace HipercowApi.Tools
     /// Factory for creating the HPC scheduler object.
     /// </param>
     public class ClusterHandleCache(
-        ISchedulerFactory? schedulerFactory = null) : IClusterHandleCache
+        ISchedulerFactory schedulerFactory) : IClusterHandleCache
     {
         private readonly Dictionary<string, IScheduler> handles = [];
-        private readonly ISchedulerFactory schedulerFactory =
-            schedulerFactory ?? new SchedulerFactory();
+        private readonly ISchedulerFactory schedulerFactory = schedulerFactory;
 
         /// <summary>
         /// Initialise the dictionary of handles with a list of clusters.

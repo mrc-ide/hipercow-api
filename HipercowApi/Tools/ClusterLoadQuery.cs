@@ -17,14 +17,13 @@ namespace HipercowApi.Tools
         public ClusterLoad GetClusterLoad(string cluster, IScheduler scheduler)
         {
             var nodeLoads = new List<NodeLoad>();
-            var filter = Utils.GetFilterNonComputeNodes(cluster);
+            var filter = Utils.GetExcludeNonComputeNodesFilter(cluster);
             var nodeList = scheduler.GetNodeList(filter, null);
 
             foreach (ISchedulerNode node in nodeList)
             {
                 var cores = node.GetCores();
                 int busy = 0;
-
                 foreach (ISchedulerCore core in cores)
                 {
                     busy += (core.State == SchedulerCoreState.Busy) ? 1 : 0;
