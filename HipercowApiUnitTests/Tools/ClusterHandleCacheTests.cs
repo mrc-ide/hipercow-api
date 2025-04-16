@@ -25,6 +25,7 @@ namespace HipercowApiUnitTests.Tools
             ClusterHandleCache chc = new ClusterHandleCache(mockSchedulerFactory.Object);
             IScheduler? sch1 = chc.GetClusterHandle("wpia-hn");
             IScheduler? sch2 = chc.GetClusterHandle("wpia-hn");
+            mockSchedulerFactory.Verify(x => x.NewScheduler(), Times.Once());
             Assert.Equal(sch1, mockScheduler.Object);
             Assert.Equal(sch1, sch2);
         }
