@@ -22,7 +22,7 @@ namespace HipercowApiUnitTests.Controllers
         {
             var cc = new ClustersController(
                 new ClusterInfoQuery(),
-                new ClusterHandleCache(new SchedulerFactory()));
+                new ClusterHandleCache(new Mock<ISchedulerFactory>().Object));
             var clusters = cc.Get();
             Assert.Equal(["wpia-hn"], clusters);
         }
