@@ -36,7 +36,7 @@ namespace HipercowApiUnitTests.Controllers
         {
             ClustersController cc = new(
                 new ClusterInfoQuery(),
-                new ClusterHandleCache(new SchedulerFactory()));
+                new ClusterHandleCache(new Mock<ISchedulerFactory>().Object));
             Assert.Equivalent(cc.NotFound(), cc.Get("potato"));
         }
 
