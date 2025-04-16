@@ -13,28 +13,21 @@ namespace HipercowApi.Tools
     public class ClusterInfoQuery : IClusterInfoQuery
     {
         /// <inheritdoc/>
-        public ClusterInfo? GetClusterInfo(string cluster, IHipercowScheduler? scheduler = null)
+        public ClusterInfo GetClusterInfo(string cluster, IScheduler scheduler)
         {
-            scheduler = scheduler ?? ClusterHandleCache.GetSingletonClusterHandleCache().GetClusterHandle(cluster)!;
+            var filter = Utils.GetExcludeNonComputeNodesFilter(cluster);
+            var sorter = Utils.GetSorterAscending();
+            var properties = Utils.GetNodeProperties();
+            var rows = Utils.NodesQuery(scheduler, properties, filter, sorter)!;
 
-            if (scheduler == null)
-            {
-                return null;
-            }
-
-            var filter = GetFilterNonComputeNodes(cluster);
-            var sorter = GetSorterAscending();
-            var properties = GetNodeProperties();
-            var rows = scheduler.NodesQuery(properties, filter, sorter)!;
-
-            var maxRam = (int)Math.Round((1 / 1024.0) * rows.Rows.Select(
-                  (row) => Utils.HPCInt(row[NodePropertyIds.MemorySize])).Max());
+            var maxRam = (int)Math.Round(1.0 / 1024.0 * rows.Rows.Select(
+                (row) => Utils.HPCInt(row[NodePropertyIds.MemorySize])).Max());
 
             var maxCores = rows.Rows.Select(
-                  (row) => Utils.HPCInt(row[NodePropertyIds.NumCores])).Max();
+                (row) => Utils.HPCInt(row[NodePropertyIds.NumCores])).Max();
 
             var nodeNames = new List<string>(rows.Rows.Select(
-                  (row) => Utils.HPCString(row[NodePropertyIds.Name])));
+                (row) => Utils.HPCString(row[NodePropertyIds.Name])));
 
             return new ClusterInfo(
                 cluster,
@@ -43,56 +36,6 @@ namespace HipercowApi.Tools
                 nodeNames,
                 DideConstants.GetQueues(cluster),
                 DideConstants.GetDefaultQueue(cluster));
-        }
-
-        /// <summary>
-        /// Helper to return a search filter, which when used queries for all nodes except
-        /// the head node.
-        /// </summary>
-        /// <param name="cluster">The cluster (headnode) name.</param>
-        /// <returns>A FilterCollection object used for filtering.</returns>
-        private static FilterCollection GetFilterNonComputeNodes(
-            string cluster)
-        {
-            return new FilterCollection
-            {
-                {
-                    FilterOperator.NotEqual,
-                    PropId.Node_Name,
-                    cluster
-                },
-            };
-        }
-
-        /// <summary>
-        /// Helper to return a node sorter in alphabetical ascending order.
-        /// </summary>
-        /// <returns>A SortCollection object used for sorting in increasing node number.</returns>
-        private static SortCollection GetSorterAscending()
-        {
-            return new SortCollection
-            {
-                {
-                    SortProperty.SortOrder.Ascending,
-                    NodePropertyIds.Name
-                },
-            };
-        }
-
-        /// <summary>
-        /// Helper to return the set of properties we want to see when asking
-        /// for information about a cluster.
-        /// </summary>
-        /// <returns>An ProprtyIdcollection including the node name, number of cores,
-        /// and memory size, which we can query for.</returns>
-        private static PropertyIdCollection GetNodeProperties()
-        {
-            return
-            [
-                NodePropertyIds.Name,
-                NodePropertyIds.NumCores,
-                NodePropertyIds.MemorySize,
-            ];
         }
     }
 }

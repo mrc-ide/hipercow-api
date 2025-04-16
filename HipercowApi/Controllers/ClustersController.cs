@@ -2,9 +2,9 @@
 
 namespace HipercowApi.Controllers
 {
-    using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Hpc.Scheduler;
 
     /// <summary>
     /// The /clusters and /clusters/xxx endpoints provide the list of clusters
@@ -14,26 +14,33 @@ namespace HipercowApi.Controllers
     [Route("api/v1/[controller]")]
     public class ClustersController : ControllerBase
     {
-        /// <summary>
-        /// An object implementing IClusterInfoQuery, responsible for returning
-        /// the list of clusters, or information on a specific cluster.
-        /// </summary>
-        private IClusterInfoQuery clusterInfoQuery = new ClusterInfoQuery();
+        private readonly IClusterInfoQuery clusterInfoQuery;
+        private readonly IClusterHandleCache clusterHandleCache;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClustersController"/> class.
+        /// Initializes a new instance of the
+        /// <see cref="ClustersController"/> class.
         /// </summary>
-        /// <param name="clusterInfoQuery">For testing only.</param>
-        public ClustersController(IClusterInfoQuery clusterInfoQuery)
+        /// <param name="clusterInfoQuery">
+        /// The cluster info query object for dependency injection.
+        /// Contains GetClusterInfo function.
+        /// </param>
+        /// <param name="clusterHandleCache">The cluster handle cache so we can look up
+        /// the connected scheduler object for the requested cluster.
+        /// </param>
+        public ClustersController(
+            IClusterInfoQuery clusterInfoQuery,
+            IClusterHandleCache clusterHandleCache)
         {
             this.clusterInfoQuery = clusterInfoQuery;
+            this.clusterHandleCache = clusterHandleCache;
         }
 
         /// <summary>
         /// Endpoint to return the list of available clusters.
         /// </summary>
         /// <returns>
-        /// A list of cluster names.
+        /// A list of cluster names - currently hard coded into the API.
         /// </returns>
         [HttpGet]
         public List<string> Get()
@@ -54,13 +61,10 @@ namespace HipercowApi.Controllers
         [HttpGet("{cluster}")]
         public IActionResult Get(string cluster)
         {
-            var info = this.clusterInfoQuery.GetClusterInfo(cluster);
-            if (info != null)
-            {
-                return this.Ok(info);
-            }
-
-            return this.NotFound();
+            IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster)!;
+            return scheduler is null ?
+                this.NotFound() :
+                this.Ok(this.clusterInfoQuery.GetClusterInfo(cluster, scheduler));
         }
     }
 }

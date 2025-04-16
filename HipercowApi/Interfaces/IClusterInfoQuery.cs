@@ -3,6 +3,7 @@
 namespace HipercowApi.Tools
 {
     using HipercowApi.Models;
+    using Microsoft.Hpc.Scheduler;
 
     /// <summary>
     /// Interface wrapper for GetClusterInfo, which fetches cluster
@@ -13,9 +14,16 @@ namespace HipercowApi.Tools
         /// <summary>
         /// Fetch information about a named cluster.
         /// </summary>
-        /// <param name="cluster">The name of the cluster - currently only wpia-hn.</param>
-        /// <param name="scheduler">Mainly for testing - the scheduler object to query.</param>
-        /// <returns>A ClusterInfo object if the named cluster exists, otherwise null.</returns>
-        public ClusterInfo? GetClusterInfo(string cluster, IHipercowScheduler? scheduler = null);
+        /// <param name="cluster">
+        /// The name of the cluster (currently only wpia-hn).
+        /// </param>
+        /// <param name="scheduler">
+        /// The handle to the connected scheduler.
+        /// </param>
+        /// <returns>
+        /// A ClusterInfo object. (The cluster is sure to exist if
+        /// it gets this far).
+        /// </returns>
+        public ClusterInfo GetClusterInfo(string cluster, IScheduler scheduler);
     }
 }

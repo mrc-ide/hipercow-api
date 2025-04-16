@@ -35,8 +35,9 @@ namespace HipercowApi.Tools
         /// </summary>
         /// <param name="cluster">The name of the cluster.</param>
         /// <returns>
-        /// If the cluster is valid, a list of strings which are the names of possible queues. If the
-        /// cluster is not valid, we return an empty list of strings.
+        /// If the cluster is valid, a list of strings which are the names of
+        /// possible queues. If the cluster is not valid, we return an empty
+        /// list of strings.
         /// </returns>
         public static List<string> GetQueues(string cluster)
         {
@@ -48,24 +49,18 @@ namespace HipercowApi.Tools
         }
 
         /// <summary>
-        /// Return the default queue that jobs should be submitted to if no queue is explicitly specified.
+        /// Return the default queue that jobs should be submitted to if no
+        /// queue is explicitly specified.
         /// </summary>
         /// <param name="cluster">The name of the cluster.</param>
         /// <returns>
-        /// The name of the default queue (ie, job template) for that cluster. If the cluster
-        /// is invalid, an empty string is returned.
+        /// The name of the default queue (ie, job template) for that cluster.
+        /// If the cluster is invalid, an empty string is returned.
         /// </returns>
         public static string GetDefaultQueue(string cluster)
         {
             var queues = GetQueues(cluster);
-            if (queues.Count > 0)
-            {
-                return queues[0];
-            }
-            else
-            {
-                return string.Empty;
-            }
+            return queues.Count > 0 ? queues[0] : string.Empty;
         }
     }
 }

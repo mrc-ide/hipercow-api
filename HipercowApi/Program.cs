@@ -3,6 +3,7 @@ namespace HipercowApi
 {
     using System.Diagnostics.CodeAnalysis;
     using HipercowApi.Tools;
+    using Microsoft.Hpc.Scheduler;
 
     /// <summary>
     /// Hipercow_api main class.
@@ -21,11 +22,14 @@ namespace HipercowApi
             // Add services to the container.
             builder.Services.AddControllers();
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            // Learn more about configuring Swagger/OpenAPI at
+            // https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<IClusterInfoQuery, ClusterInfoQuery>();
-            builder.Services.AddSingleton<IHipercowScheduler, HipercowScheduler>();
+            builder.Services.AddSingleton<IClusterLoadQuery, ClusterLoadQuery>();
+            builder.Services.AddSingleton<IClusterHandleCache, ClusterHandleCache>();
+            builder.Services.AddSingleton<ISchedulerFactory, SchedulerFactory>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -41,7 +45,6 @@ namespace HipercowApi
 
             app.MapControllers();
 
-            ClusterHandleCache.GetSingletonClusterHandleCache().InitialiseHandles(DideConstants.GetDideClusters());
             app.Run();
         }
     }

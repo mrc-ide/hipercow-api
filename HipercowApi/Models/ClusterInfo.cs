@@ -12,14 +12,16 @@ namespace HipercowApi.Models
         /// The constructor for ClusterInfo.
         /// </summary>
         /// <param name="name">The name of the cluster.</param>
-        /// <param name="maxRam">The largest amount of RAM (Gb) for any node.</param>
-        /// <param name="maxCores">The largest number of cores for any node.</param>
+        /// <param name="maxRam">The largest RAM (Gb) for any node.</param>
+        /// <param name="maxCores">The maximum cores for any node.</param>
         /// <param name="nodes">A list of each node's name.</param>
         /// <param name="queues">
-        /// A list of queues that users (if they have permission) can submit jobs to.
+        /// A list of queues that users (if they have permission) can
+        /// submit jobs to.
         /// </param>
         /// <param name="defaultQueue">
-        /// The default queue that jobs are submitted to if the user does not specify one.
+        /// The default queue that jobs are submitted to if the user does
+        /// not specify one.
         /// </param>
         public ClusterInfo(
             string name,
