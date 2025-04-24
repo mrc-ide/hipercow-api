@@ -3,7 +3,6 @@ namespace HipercowApi
 {
     using System.Diagnostics.CodeAnalysis;
     using HipercowApi.Tools;
-    using Microsoft.Hpc.Scheduler;
 
     /// <summary>
     /// Hipercow_api main class.
@@ -28,6 +27,7 @@ namespace HipercowApi
             builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<IClusterInfoQuery, ClusterInfoQuery>();
             builder.Services.AddSingleton<IClusterLoadQuery, ClusterLoadQuery>();
+            builder.Services.AddSingleton<IJobListQuery, JobListQuery>();
             builder.Services.AddSingleton<IClusterHandleCache, ClusterHandleCache>();
             builder.Services.AddSingleton<ISchedulerFactory, SchedulerFactory>();
             var app = builder.Build();

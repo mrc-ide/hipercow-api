@@ -32,5 +32,20 @@ namespace HipercowApiUnitTests.Tools
             var i = Utils.HPCInt(p);
             Assert.Equal(256, i);
         }
+
+        /// <summary>
+        /// HPCJobState returns correct values.
+        /// </summary>
+        [Fact]
+        public void HPCJobState_Works()
+        {
+            Assert.Equal(JobState.Canceled, Utils.HPCJobState("Canceled"));
+            Assert.Equal(JobState.Failed, Utils.HPCJobState("Failed"));
+            Assert.Equal(JobState.Finished, Utils.HPCJobState("Finished"));
+            Assert.Equal(JobState.Queued, Utils.HPCJobState("Queued"));
+            Assert.Equal(JobState.Running, Utils.HPCJobState("Running"));
+            Assert.Null(Utils.HPCJobState("Potato"));
+            Assert.Null(Utils.HPCJobState(null));
+        }
     }
 }
