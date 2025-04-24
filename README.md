@@ -12,4 +12,5 @@ This is the .NET Core Web api to talk to our MS HPC Cluster.
 * `/api/v1/Clusters` - List of cluster headnodes we support.
 * `/api/v1/Clusters/{cluster}` - Cluster name, maxRam, maxCores, nodes list, queues list and defaultQueue.
 * `/api/v1/ClusterLoad/{cluster}` - Cluster name, list of nodeLoads - each of which is name, coresInUse, nodeCores and state.
+* `/api/v1/JobList` - POST cluster, user, state and maxRows to query jobs the headnode knows about with those filters.
 
