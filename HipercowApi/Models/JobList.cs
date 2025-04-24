@@ -5,7 +5,7 @@ namespace HipercowApi.Models
     using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
-    /// A class containing information about a cluster's current load.
+    /// A class containing a cluster name, and list of jobs queried from it.
     /// </summary>
     /// <remarks>
     /// Initializes a new instance of the <see cref="JobList"/> class.
@@ -15,15 +15,8 @@ namespace HipercowApi.Models
     /// A list of JobInfo objects, giving information on each job.
     /// </param>
     public class JobList(
-        string name,
         List<JobInfo> jobs)
     {
-        /// <summary>
-        /// Gets or sets the name of the cluster.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        public string Name { get; set; } = name;
-
         /// <summary>
         /// Gets or sets the list of NodeLoad objects.
         /// </summary>

@@ -119,7 +119,7 @@ namespace HipercowApi.Tools
         }
 
         /// <summary>
-        /// Convert the name of a job state, to a JobState enum.
+        /// Convert the name of a job state, to a JobState enum member.
         /// </summary>
         /// <param name="name">Name of the job state.</param>
         /// <returns>

@@ -56,7 +56,8 @@ namespace HipercowApi.Controllers
             IScheduler scheduler = this.clusterHandleCache.GetClusterHandle(cluster)!;
             return scheduler is null ?
                 this.NotFound() :
-                this.Ok(this.jobListQuery.GetJobList(cluster, scheduler, user, state, maxRows));
+                this.Ok(this.jobListQuery.GetJobList(
+                    cluster, scheduler, user, state, maxRows));
         }
     }
 }

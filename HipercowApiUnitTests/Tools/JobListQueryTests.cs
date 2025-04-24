@@ -20,8 +20,10 @@ namespace HipercowApiUnitTests.Tools
         public void JobListQueryNoFilters_Works()
         {
             var mockRowEnum = new Mock<ISchedulerRowEnumerator>();
-            mockRowEnum.Setup(x => x.GetRows(It.IsAny<int>())).Returns(new PropertyRowSet(null, AllJobs()));
-            mockRowEnum.Setup(x => x.GetRows(1)).Returns(new PropertyRowSet(null, OneJob()));
+            mockRowEnum.Setup(x => x.GetRows(It.IsAny<int>())).
+                Returns(new PropertyRowSet(null, AllJobs()));
+            mockRowEnum.Setup(x => x.GetRows(1)).
+                Returns(new PropertyRowSet(null, OneJob()));
             var mockScheduler = new Mock<IScheduler>();
             mockScheduler.Setup(x => x.OpenJobEnumerator(
                 It.IsAny<PropertyIdCollection>(),
@@ -29,7 +31,8 @@ namespace HipercowApiUnitTests.Tools
                 It.IsAny<ISortCollection>())).Returns(mockRowEnum.Object);
 
             JobListQuery jlq = new();
-            JobList jl = jlq.GetJobList("wpia-hn", mockScheduler.Object, null, null, int.MaxValue);
+            JobList jl = jlq.
+                GetJobList("wpia-hn", mockScheduler.Object, null, null, 99);
             Assert.Equal(5, jl.Jobs.Count);
 
             jl = jlq.GetJobList("wpia-hn", mockScheduler.Object, null, null, 1);
@@ -43,7 +46,8 @@ namespace HipercowApiUnitTests.Tools
         public void JobListQueryFilters_Works()
         {
             var mockRowEnum = new Mock<ISchedulerRowEnumerator>();
-            mockRowEnum.Setup(x => x.GetRows(It.IsAny<int>())).Returns(new PropertyRowSet(null, BobsJobs()));
+            mockRowEnum.Setup(x => x.GetRows(It.IsAny<int>())).
+                Returns(new PropertyRowSet(null, BobsJobs()));
             var mockScheduler = new Mock<IScheduler>();
             mockScheduler.Setup(x => x.OpenJobEnumerator(
                 It.IsAny<PropertyIdCollection>(),
@@ -54,10 +58,12 @@ namespace HipercowApiUnitTests.Tools
                 It.IsAny<FilterOperator>(),
                 It.IsAny<PropId>(),
                 It.IsAny<object>())).Verifiable();
-            mockScheduler.Setup(x => x.CreateFilterCollection()).Returns(mockFilter.Object);
+            mockScheduler.Setup(x => x.CreateFilterCollection()).
+                Returns(mockFilter.Object);
 
             JobListQuery jlq = new();
-            JobList jl = jlq.GetJobList("wpia-hn", mockScheduler.Object, "Bob", null, int.MaxValue);
+            JobList jl = jlq.
+                GetJobList("wpia-hn", mockScheduler.Object, "Bob", null, 99);
             Assert.Equal(3, jl.Jobs.Count);
             mockFilter.Verify(
                 x => x.Add(

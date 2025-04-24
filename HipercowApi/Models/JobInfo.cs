@@ -5,7 +5,7 @@ namespace HipercowApi.Models
     using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
-    /// A class containing information about a node's current load.
+    /// Information about an existing cluster job.
     /// </summary>
     /// <remarks>
     /// Initializes a new instance of the <see cref="JobInfo"/> class.

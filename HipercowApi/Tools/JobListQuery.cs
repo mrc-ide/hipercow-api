@@ -21,9 +21,10 @@ namespace HipercowApi.Tools
             int maxRows = 500)
         {
             var jobs = new List<JobInfo>();
+            JobState? hpcstate = Utils.HPCJobState(state);
             IFilterCollection jobFilter = scheduler.CreateFilterCollection();
             AddIfNotNull(jobFilter, FilterOperator.Equal, PropId.Job_UserName, user);
-            AddIfNotNull(jobFilter, FilterOperator.Equal, PropId.Job_State, Utils.HPCJobState(state));
+            AddIfNotNull(jobFilter, FilterOperator.Equal, PropId.Job_State, hpcstate);
 
             PropertyIdCollection props =
             [
@@ -33,7 +34,8 @@ namespace HipercowApi.Tools
                 JobPropertyIds.State,
             ];
 
-            PropertyRowSet jobList = scheduler.OpenJobEnumerator(props, jobFilter, null).GetRows(maxRows);
+            var rowEnum = scheduler.OpenJobEnumerator(props, jobFilter, null);
+            var jobList = rowEnum.GetRows(maxRows);
 
             foreach (PropertyRow job in jobList.Rows)
             {
@@ -43,12 +45,14 @@ namespace HipercowApi.Tools
                     Utils.HPCString(job[JobPropertyIds.State])));
             }
 
-            return new JobList(
-                cluster,
-                jobs);
+            return new JobList(jobs);
         }
 
-        private static void AddIfNotNull(IFilterCollection jf, FilterOperator fo, PropId pi, object? val)
+        private static void AddIfNotNull(
+            IFilterCollection jf,
+            FilterOperator fo,
+            PropId pi,
+            object? val)
         {
             if (val is not null)
             {

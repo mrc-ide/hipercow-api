@@ -12,27 +12,21 @@ namespace HipercowApi.Tools
     public interface IJobListQuery
     {
         /// <summary>
-        /// Fetch information about the current load of a named cluster.
+        /// Look up jobs from the scheduler by user and state.
         /// </summary>
-        /// <param name="cluster">
-        /// The name of the cluster - currently only wpia-hn.
-        /// </param>
-        /// <param name="scheduler">
-        /// The connected scheduler object to query.
-        /// </param>
-        /// <param name="user">
-        /// If set, filter results to this user.
-        /// </param>
-        /// <param name="state">
-        /// If set, filter jobs to this state.
-        /// </param>
-        /// <param name="maxRows">
-        /// Set maximum number of rows to return.
-        /// </param>
+        /// <param name="cluster">The cluster name, currently wpia-hn.</param>
+        /// <param name="scheduler">The scheduler object to query.</param>
+        /// <param name="user">If set, filter results to this user.</param>
+        /// <param name="state">If set, filter jobs to this state.</param>
+        /// <param name="maxRows">Set maximum number of rows to return.</param>
         /// <returns>
-        /// A JobList object. (The cluster is sure to exist
-        /// if we get this far)
+        /// A JobList object containing the results.
         /// .</returns>
-        public JobList GetJobList(string cluster, IScheduler scheduler, string user, string state, int maxRows);
+        public JobList GetJobList(
+            string cluster,
+            IScheduler scheduler,
+            string user,
+            string state,
+            int maxRows);
     }
 }

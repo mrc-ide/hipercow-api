@@ -19,7 +19,7 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetJobList_Works()
         {
-            var fakeList = new JobList("test", new List<JobInfo>());
+            var fakeList = new JobList(new List<JobInfo>());
             var mockQuery = new Mock<IJobListQuery>();
             mockQuery.Setup(x => x.GetJobList(
                 It.IsAny<string>(),
@@ -30,7 +30,8 @@ namespace HipercowApiUnitTests.Controllers
 
             var mockScheduler = new Mock<IScheduler>();
             var mockHandleCache = new Mock<IClusterHandleCache>();
-            mockHandleCache.Setup(x => x.GetClusterHandle("potato")).Returns(mockScheduler.Object);
+            mockHandleCache.Setup(x =>
+              x.GetClusterHandle("potato")).Returns(mockScheduler.Object);
             mockHandleCache.Setup(x => x.GetClusterHandle("radish")).Verifiable();
 
             var jlc = new JobListController(mockQuery.Object, mockHandleCache.Object);
