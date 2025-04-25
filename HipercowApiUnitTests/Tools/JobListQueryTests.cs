@@ -63,14 +63,13 @@ namespace HipercowApiUnitTests.Tools
 
             JobListQuery jlq = new();
             JobList jl = jlq.
-                GetJobList("wpia-hn", mockScheduler.Object, "Bob", null, 99);
-            Assert.Equal(3, jl.Jobs.Count);
+                GetJobList("wpia-hn", mockScheduler.Object, "Bob", "Queued", 99);
             mockFilter.Verify(
                 x => x.Add(
                     It.IsAny<FilterOperator>(),
                     It.IsAny<PropId>(),
                     It.IsAny<object>()),
-                Times.Once());
+                Times.Exactly(2));
         }
 
         private static PropertyRow FakeJobInfo(

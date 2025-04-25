@@ -18,13 +18,22 @@ namespace HipercowApi.Tools
             IScheduler scheduler,
             string? user,
             string? state,
-            int maxRows = 500)
+            int? maxRows)
         {
             var jobs = new List<JobInfo>();
-            JobState? hpcstate = Utils.HPCJobState(state);
             IFilterCollection jobFilter = scheduler.CreateFilterCollection();
-            AddIfNotNull(jobFilter, FilterOperator.Equal, PropId.Job_UserName, user);
-            AddIfNotNull(jobFilter, FilterOperator.Equal, PropId.Job_State, hpcstate);
+
+            // state is either null, or a valid job state (string) at this point.
+            // The non-null invalid state is dealt with in the controller.
+            if (state is not null)
+            {
+                jobFilter.Add(FilterOperator.Equal, PropId.Job_State, Utils.HPCJobState(state));
+            }
+
+            if (user is not null)
+            {
+                jobFilter.Add(FilterOperator.Equal, PropId.Job_UserName, user);
+            }
 
             PropertyIdCollection props =
             [
@@ -35,7 +44,7 @@ namespace HipercowApi.Tools
             ];
 
             var rowEnum = scheduler.OpenJobEnumerator(props, jobFilter, null);
-            var jobList = rowEnum.GetRows(maxRows);
+            var jobList = rowEnum.GetRows(maxRows ?? 500);
 
             foreach (PropertyRow job in jobList.Rows)
             {
@@ -46,18 +55,6 @@ namespace HipercowApi.Tools
             }
 
             return new JobList(jobs);
-        }
-
-        private static void AddIfNotNull(
-            IFilterCollection jf,
-            FilterOperator fo,
-            PropId pi,
-            object? val)
-        {
-            if (val is not null)
-            {
-                jf.Add(fo, pi, val);
-            }
         }
     }
 }

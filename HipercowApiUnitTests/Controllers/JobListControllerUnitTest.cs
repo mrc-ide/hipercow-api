@@ -24,8 +24,8 @@ namespace HipercowApiUnitTests.Controllers
             mockQuery.Setup(x => x.GetJobList(
                 It.IsAny<string>(),
                 It.IsAny<IScheduler>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
                 It.IsAny<int>())).Returns(fakeList);
 
             var mockScheduler = new Mock<IScheduler>();
@@ -35,11 +35,21 @@ namespace HipercowApiUnitTests.Controllers
             mockHandleCache.Setup(x => x.GetClusterHandle("radish")).Verifiable();
 
             var jlc = new JobListController(mockQuery.Object, mockHandleCache.Object);
-            var res = jlc.Post("potato", string.Empty, string.Empty, 0);
+            var res = jlc.Post("potato", null, null, 0);
             Assert.Equivalent(jlc.Ok(fakeList), res);
 
-            res = jlc.Post("radish", string.Empty, string.Empty, 0);
+            res = jlc.Post("radish", null, null, 0);
             Assert.Equivalent(jlc.NotFound(), res);
+
+            res = jlc.Post("potato", null, "Finished", 0);
+            Assert.Equivalent(jlc.Ok(fakeList), res);
+
+            res = jlc.Post("potato", null, "Roasted", 0);
+            Assert.Equivalent(
+                jlc.BadRequest(
+                    "Job State Roasted not found. Options: Canceled, Failed, " +
+                    "Finished, Queued, Running or leave empty."),
+                res);
         }
     }
 }

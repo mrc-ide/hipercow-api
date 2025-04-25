@@ -53,6 +53,12 @@ namespace HipercowApi.Controllers
             [FromForm] string? state,
             [FromForm] int? maxRows)
         {
+            if ((state is not null) && (Utils.HPCJobState(state) is null))
+            {
+                return this.BadRequest("Job State " + state + " not found. " +
+                    "Options: Canceled, Failed, Finished, Queued, Running or leave empty.");
+            }
+
             IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster);
             return scheduler is null ?
                 this.NotFound() :

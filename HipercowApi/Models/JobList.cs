@@ -10,7 +10,6 @@ namespace HipercowApi.Models
     /// <remarks>
     /// Initializes a new instance of the <see cref="JobList"/> class.
     /// </remarks>
-    /// <param name="name">The name of the requested cluster.</param>
     /// <param name="jobs">
     /// A list of JobInfo objects, giving information on each job.
     /// </param>
