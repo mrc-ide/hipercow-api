@@ -45,7 +45,6 @@ namespace HipercowApiUnitTests.Tools
             Assert.Equal(JobState.Queued, Utils.HPCJobState("Queued"));
             Assert.Equal(JobState.Running, Utils.HPCJobState("Running"));
             Assert.Null(Utils.HPCJobState("Potato"));
-            Assert.Null(Utils.HPCJobState(null));
         }
     }
 }

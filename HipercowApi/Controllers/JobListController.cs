@@ -38,9 +38,9 @@ namespace HipercowApi.Controllers
         /// Endpoint to return a list of jobs and information about them.
         /// </summary>
         /// <param name="cluster">The cluster to query.</param>
-        /// <param name="user">Filter jobs to this user.</param>
-        /// <param name="state">Filter jobs to this state.</param>
-        /// <param name="maxRows">The maximum number of rows to return.</param>
+        /// <param name="user">Optional: Filter jobs to this user.</param>
+        /// <param name="state">Optional: Filter jobs to this state.</param>
+        /// <param name="maxRows">Optional: The maximum number of rows to return.</param>
         /// <returns>
         /// The information about the cluster load (see clusterLoadQuery) wrapped
         /// in an IActionResult to indicate whether the request was ok or not. The
@@ -49,11 +49,11 @@ namespace HipercowApi.Controllers
         [HttpPost]
         public IActionResult Post(
             [FromForm] string cluster,
-            [FromForm] string user,
-            [FromForm] string state,
-            [FromForm] int maxRows)
+            [FromForm] string? user,
+            [FromForm] string? state,
+            [FromForm] int? maxRows)
         {
-            IScheduler scheduler = this.clusterHandleCache.GetClusterHandle(cluster)!;
+            IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster);
             return scheduler is null ?
                 this.NotFound() :
                 this.Ok(this.jobListQuery.GetJobList(

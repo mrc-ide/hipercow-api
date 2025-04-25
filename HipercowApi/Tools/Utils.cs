@@ -125,7 +125,7 @@ namespace HipercowApi.Tools
         /// <returns>
         /// A JobState, or null if the name is not recognised or supported.
         /// </returns>
-        public static JobState? HPCJobState(string? name)
+        public static JobState? HPCJobState(string name)
         {
             return Enum.TryParse(name, out JobState result) ? result : null;
         }

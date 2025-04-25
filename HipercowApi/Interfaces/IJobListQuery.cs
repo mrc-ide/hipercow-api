@@ -25,8 +25,8 @@ namespace HipercowApi.Tools
         public JobList GetJobList(
             string cluster,
             IScheduler scheduler,
-            string user,
-            string state,
-            int maxRows);
+            string? user,
+            string? state,
+            int? maxRows);
     }
 }
