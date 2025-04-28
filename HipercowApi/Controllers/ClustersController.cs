@@ -61,7 +61,7 @@ namespace HipercowApi.Controllers
         [HttpGet("{cluster}")]
         public IActionResult Get(string cluster)
         {
-            IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster)!;
+            IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster);
             return scheduler is null ?
                 this.NotFound() :
                 this.Ok(this.clusterInfoQuery.GetClusterInfo(cluster, scheduler));

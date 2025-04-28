@@ -2,7 +2,6 @@
 
 namespace HipercowApi.Tools
 {
-    using System.Diagnostics.CodeAnalysis;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
 
@@ -117,6 +116,18 @@ namespace HipercowApi.Tools
                 NodePropertyIds.NumCores,
                 NodePropertyIds.MemorySize,
             ];
+        }
+
+        /// <summary>
+        /// Convert the name of a job state, to a JobState enum member.
+        /// </summary>
+        /// <param name="name">Name of the job state.</param>
+        /// <returns>
+        /// A JobState, or null if the name is not recognised or supported.
+        /// </returns>
+        public static JobState? HPCJobState(string name)
+        {
+            return Enum.TryParse(name, out JobState result) ? result : null;
         }
     }
 }
