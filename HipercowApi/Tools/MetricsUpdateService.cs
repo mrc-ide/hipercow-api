@@ -158,7 +158,8 @@ namespace HipercowApi.Tools
                     foreach (var user in this.userJobs.Keys)
                     {
                         var details = this.userJobs[user];
-                        foreach (string state in new List<string> {
+                        foreach (string state in new List<string>
+                        {
                             "Running", "Queued", "Finished", "Failed", "Cancelled",
                         })
                         {
@@ -173,7 +174,7 @@ namespace HipercowApi.Tools
                     }
                 }
 
-                await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
             }
         }
     }
