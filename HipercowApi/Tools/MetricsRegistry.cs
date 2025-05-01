@@ -1,10 +1,12 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
+using System.Diagnostics.CodeAnalysis;
 using Prometheus;
 
 /// <summary>
 /// Static registry of Hipercow metrics.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class MetricsRegistry
 {
     /// <summary>
