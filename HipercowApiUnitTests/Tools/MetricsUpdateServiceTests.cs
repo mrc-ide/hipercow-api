@@ -75,12 +75,14 @@ namespace HipercowApiUnitTests.Tools
                 It.IsAny<PropertyIdCollection>(),
                 It.IsAny<IFilterCollection>(),
                 It.IsAny<SortCollection>())).Returns(mockRowEnumerator.Object);
-            mockScheduler.Setup(x => x.CreateFilterCollection()).Returns(new FilterCollection());
+            mockScheduler.Setup(x => x.CreateFilterCollection()).
+                Returns(new FilterCollection());
             mockRowEnumerator.Setup(x => x.GetRows(It.IsAny<int>())).
                 Returns(new PropertyRowSet(null, AllJobs()));
 
             var mockCHC = new Mock<IClusterHandleCache>();
-            mockCHC.Setup(x => x.GetClusterHandle(It.IsAny<string>())).Returns(mockScheduler.Object);
+            mockCHC.Setup(x => x.GetClusterHandle(It.IsAny<string>())).
+                Returns(mockScheduler.Object);
             MetricsUpdateService mus = new(mockCHC.Object);
 
             mus.UpdateByState("potato", JobState.Finished, 24);

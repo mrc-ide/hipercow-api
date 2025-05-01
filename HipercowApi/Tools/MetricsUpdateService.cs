@@ -17,20 +17,11 @@ namespace HipercowApi.Tools
     /// <param name="clusterHandleCache">
     /// Handle cache so we can query the headnode.
     /// </param>
-    public class MetricsUpdateService(IClusterHandleCache clusterHandleCache) : BackgroundService
+    public class MetricsUpdateService(
+        IClusterHandleCache clusterHandleCache) : BackgroundService
     {
         private readonly IClusterHandleCache clusterHandleCache = clusterHandleCache;
         private readonly Dictionary<string, Dictionary<string, dynamic>> userJobs = [];
-
-        /// <summary>
-        /// Return user jobs for testing.
-        /// </summary>
-        /// <returns>The userJobs structure.
-        /// </returns>
-        internal Dictionary<string, Dictionary<string, dynamic>> GetUserJobs()
-        {
-            return this.userJobs;
-        }
 
         /// <summary>
         /// Calculate core hours for a Finished or Running job.
@@ -60,6 +51,16 @@ namespace HipercowApi.Tools
         }
 
         /// <summary>
+        /// Return user jobs for testing.
+        /// </summary>
+        /// <returns>The userJobs structure.
+        /// </returns>
+        internal Dictionary<string, Dictionary<string, dynamic>> GetUserJobs()
+        {
+            return this.userJobs;
+        }
+        
+        /// <summary>
         /// Query a cluster and update the userJobs records, which store
         /// for each user, how many jobs they have (in recent history), in
         /// a particular state, and also how many core-hours they have
@@ -75,9 +76,10 @@ namespace HipercowApi.Tools
         {
             IScheduler scheduler = this.clusterHandleCache.GetClusterHandle(cluster)!;
 
-            PropertyIdCollection props = [JobPropertyIds.UserName, JobPropertyIds.Owner, JobPropertyIds.ChangeTime,
-                  JobPropertyIds.StartTime, JobPropertyIds.EndTime, JobPropertyIds.MinCores, JobPropertyIds.MinNodes,
-                  JobPropertyIds.UnitType];
+            PropertyIdCollection props = [
+                JobPropertyIds.UserName, JobPropertyIds.Owner, JobPropertyIds.ChangeTime,
+                JobPropertyIds.StartTime, JobPropertyIds.EndTime, JobPropertyIds.MinCores,
+                JobPropertyIds.MinNodes, JobPropertyIds.UnitType];
 
             IFilterCollection jobFilter = scheduler.CreateFilterCollection();
             jobFilter.Add(FilterOperator.Equal, JobPropertyIds.State, state);
@@ -89,7 +91,8 @@ namespace HipercowApi.Tools
                 },
             };
 
-            ISchedulerRowEnumerator jobs = scheduler.OpenJobEnumerator(props, jobFilter, sortFilter);
+            ISchedulerRowEnumerator jobs = scheduler.OpenJobEnumerator(
+                props, jobFilter, sortFilter);
             var now = DateTime.Now;
             var stateName = (state == JobState.Canceled) ? "Cancelled" : Enum.GetName(state)!;
             var jobList = jobs.GetRows(int.MaxValue);
@@ -155,12 +158,18 @@ namespace HipercowApi.Tools
                     foreach (var user in this.userJobs.Keys)
                     {
                         var details = this.userJobs[user];
-                        foreach (string state in new List<string> { "Running", "Queued", "Finished", "Failed", "Cancelled" })
+                        foreach (string state in new List<string> {
+                            "Running", "Queued", "Finished", "Failed", "Cancelled",
+                        })
                         {
-                            MetricsRegistry.JobsGauge.WithLabels([cluster, user, state]).Set(details[state]);
+                            MetricsRegistry.JobsGauge.
+                                WithLabels([cluster, user, state]).
+                                Set(details[state]);
                         }
 
-                        MetricsRegistry.CoreHoursGauge.WithLabels([cluster, user]).Set(details["coreHours"]);
+                        MetricsRegistry.CoreHoursGauge.
+                            WithLabels([cluster, user]).
+                            Set(details["coreHours"]);
                     }
                 }
 
