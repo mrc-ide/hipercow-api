@@ -3,6 +3,7 @@ namespace HipercowApi
 {
     using System.Diagnostics.CodeAnalysis;
     using HipercowApi.Tools;
+    using Prometheus;
 
     /// <summary>
     /// Hipercow_api main class.
@@ -30,6 +31,7 @@ namespace HipercowApi
             builder.Services.AddSingleton<IJobListQuery, JobListQuery>();
             builder.Services.AddSingleton<IClusterHandleCache, ClusterHandleCache>();
             builder.Services.AddSingleton<ISchedulerFactory, SchedulerFactory>();
+            builder.Services.AddHostedService<MetricsUpdateService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -42,8 +44,9 @@ namespace HipercowApi
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
             app.MapControllers();
+
+            app.UseMetricServer();
 
             app.Run();
         }
