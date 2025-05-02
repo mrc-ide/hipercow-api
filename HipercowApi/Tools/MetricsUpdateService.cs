@@ -95,13 +95,11 @@ namespace HipercowApi.Tools
                 },
             };
 
-            ISchedulerRowEnumerator jobs = scheduler.OpenJobEnumerator(
+            var jobs = scheduler.OpenJobEnumerator(
                 props, jobFilter, sortFilter);
             var now = DateTime.Now;
             var stateName = (state == JobState.Canceled) ? "Cancelled" : Enum.GetName(state)!;
-            var jobList = jobs.GetRows(int.MaxValue);
-
-            foreach (var job in jobList.Rows)
+            foreach (var job in jobs)
             {
                 var changeTime = job[JobPropertyIds.ChangeTime];
                 TimeSpan diff = now - (DateTime)changeTime.Value;
