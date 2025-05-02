@@ -4,6 +4,7 @@ namespace HipercowApi.Tools
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.CompilerServices;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
@@ -20,6 +21,11 @@ namespace HipercowApi.Tools
     public class MetricsUpdateService(
         IClusterHandleCache clusterHandleCache) : BackgroundService
     {
+        private static readonly List<string> InterestingStates = new()
+        {
+            "Running", "Queued", "Finished", "Failed", "Cancelled",
+        };
+
         private readonly IClusterHandleCache clusterHandleCache = clusterHandleCache;
         private readonly Dictionary<string, Dictionary<string, dynamic>> userJobs = [];
 
@@ -37,15 +43,13 @@ namespace HipercowApi.Tools
         {
             var start = (DateTime)job[JobPropertyIds.StartTime].Value;
             var end = (state == JobState.Finished) ?
-                (DateTime)job[JobPropertyIds.EndTime].Value :
-                DateTime.Now;
-            var unitType = (JobUnitType)job[JobPropertyIds.UnitType].Value;
-            var unitCount = (unitType == JobUnitType.Core) ?
-                (int)job[JobPropertyIds.MinCores].Value :
-                (int)job[JobPropertyIds.MinNodes].Value;
-            var noCores = (unitType == JobUnitType.Core) ?
-                unitCount :
-                unitCount * 32;
+                        (DateTime)job[JobPropertyIds.EndTime].Value :
+                         DateTime.Now;
+
+            var useCores = (JobUnitType)job[JobPropertyIds.UnitType].Value == JobUnitType.Core;
+            var unitCount = (int)job[useCores ? JobPropertyIds.MinCores : JobPropertyIds.MinNodes].Value;
+
+            var noCores = useCores ? unitCount : unitCount * 32;
             TimeSpan span = end - start;
             return (float)span.TotalHours * noCores;
         }
@@ -59,7 +63,7 @@ namespace HipercowApi.Tools
         {
             return this.userJobs;
         }
-        
+
         /// <summary>
         /// Query a cluster and update the userJobs records, which store
         /// for each user, how many jobs they have (in recent history), in
@@ -115,22 +119,32 @@ namespace HipercowApi.Tools
                 this.userJobs.TryGetValue(user, out Dictionary<string, dynamic>? value);
                 if (value is null)
                 {
-                    value = [];
-                    value["Finished"] = 0;
-                    value["Queued"] = 0;
-                    value["Cancelled"] = 0;
-                    value["Running"] = 0;
-                    value["Failed"] = 0;
+                    value = InterestingStates.ToDictionary(state => state, _ => (dynamic)0);
                     value["coreHours"] = 0.0f;
                     this.userJobs.Add(user, value);
                 }
 
                 value[stateName]++;
-                if ((state == JobState.Finished) || (state == JobState.Running))
+                if (state is JobState.Finished or JobState.Running)
                 {
                     value["coreHours"] += GetCoreHours(job, state);
                 }
             }
+        }
+
+        /// <summary>
+        /// Update all the metrics we're interested in, for a cluster.
+        /// </summary>
+        /// <param name="cluster">Name of cluster.</param>
+        // Excluding from code coverage as I test UpdateByState separately.
+        [ExcludeFromCodeCoverage]
+        internal void UpdateAllMetrics(string cluster)
+        {
+            this.UpdateByState(cluster, JobState.Running, int.MaxValue);
+            this.UpdateByState(cluster, JobState.Queued, int.MaxValue);
+            this.UpdateByState(cluster, JobState.Finished, 24);
+            this.UpdateByState(cluster, JobState.Failed, 24);
+            this.UpdateByState(cluster, JobState.Canceled, 24);
         }
 
         /// <summary>
@@ -149,19 +163,12 @@ namespace HipercowApi.Tools
                 foreach (var cluster in clusters)
                 {
                     this.userJobs.Clear();
-                    this.UpdateByState(cluster, JobState.Running, int.MaxValue);
-                    this.UpdateByState(cluster, JobState.Queued, int.MaxValue);
-                    this.UpdateByState(cluster, JobState.Finished, 24);
-                    this.UpdateByState(cluster, JobState.Failed, 24);
-                    this.UpdateByState(cluster, JobState.Canceled, 24);
+                    this.UpdateAllMetrics(cluster);
 
                     foreach (var user in this.userJobs.Keys)
                     {
                         var details = this.userJobs[user];
-                        foreach (string state in new List<string>
-                        {
-                            "Running", "Queued", "Finished", "Failed", "Cancelled",
-                        })
+                        foreach (string state in InterestingStates)
                         {
                             MetricsRegistry.JobsGauge.
                                 WithLabels([cluster, user, state]).

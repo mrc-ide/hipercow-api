@@ -2,6 +2,7 @@
 
 namespace HipercowApiUnitTests.Tools
 {
+    using System.Diagnostics.CodeAnalysis;
     using HipercowApi.Tools;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
@@ -63,9 +64,11 @@ namespace HipercowApiUnitTests.Tools
         }
 
         /// <summary>
-        /// Test metrics update call.
+        /// Test metrics update call. I get strange partial code coverage
+        /// on the Assert.Equal lines - not sure why.
         /// </summary>
         [Fact]
+        [ExcludeFromCodeCoverage]
         public void MetricsUpdate_Works()
         {
             var mockScheduler = new Mock<IScheduler>();
@@ -87,6 +90,7 @@ namespace HipercowApiUnitTests.Tools
 
             mus.UpdateByState("potato", JobState.Finished, 24);
             var res = mus.GetUserJobs();
+
             Assert.Equal(1, res["A"]["Finished"]);
             Assert.Equal(2, res["A"]["coreHours"]);
             Assert.Equal(1, res["B"]["Finished"]);
