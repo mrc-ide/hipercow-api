@@ -1,20 +1,18 @@
 ﻿// Copyright (c) Imperial College London. All rights reserved.
 
-using System.DirectoryServices.Protocols;
-using System.Net;
 using HipercowApi.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
 /// The auth/ endpoints for authentication.
 /// </summary>
-public class AuthController(JwtTokenGenerator tokenGenerator, UserSessionManager sessionManager) : ControllerBase
+[ApiController]
+[Route("api/v1/[controller]")]
+public class AuthController(JwtTokenGenerator tokenGenerator, UserSessionManager sessionManager, ILdapManager ldapManager) : ControllerBase
 {
     private readonly JwtTokenGenerator tokenGenerator = tokenGenerator;
-    private readonly string ldapServer = "wpia-didedc2.dide.ic.ac.uk";
-    private readonly int ldapPort = 389;
-    private readonly string domain = "dide.local";
     private readonly UserSessionManager sessionManager = sessionManager;
+    private readonly ILdapManager ldapManager = ldapManager;
 
     /// <summary>
     /// The Login endpoint. Accept username and password and return a JWT and session ID.
@@ -29,35 +27,25 @@ public class AuthController(JwtTokenGenerator tokenGenerator, UserSessionManager
             return this.BadRequest("Username or password cannot be empty.");
         }
 
-        try
+        LdapConnectionWrapper ldap = this.ldapManager.GetDideLdapConnection(this, request);
+        if (ldap.Connection == null)
         {
-            LdapDirectoryIdentifier ldapDirId = new(this.ldapServer, this.ldapPort);
-            LdapConnection ldap = new(ldapDirId);
-            NetworkCredential credentials = new(request.Username, request.Password, this.domain);
-            ldap.AuthType = AuthType.Negotiate;
-            ldap.Bind(credentials);
-            List<string> groups = Utils.GetDomainGroups(request.Username, ldap);
-            bool wpia_hn_access = groups.Contains("WPIA-HN.HPC Users - All Nodes");
-            bool wpia_hn_admin = groups.Contains("WPIA-HN.HPC Administrators");
-            var token = this.tokenGenerator.GenerateToken(request.Username);
-            var session = new UserSession
-            {
-                Username = request.Username,
-                Password = request.Password,
-                Wpia_hn_access = wpia_hn_access,
-                Wpia_hn_admin = wpia_hn_admin,
-            };
-            var sessionId = this.sessionManager.StoreSession(session);
-            return this.Ok(new { token, sessionId });
+            return ldap.Result;
         }
-        catch (LdapException)
+
+        List<string> groups = this.ldapManager.GetDomainGroups(request.Username, ldap.Connection);
+        bool wpia_hn_access = groups.Contains("WPIA-HN.HPC Users - All Nodes");
+        bool wpia_hn_admin = groups.Contains("WPIA-HN.HPC Administrators");
+        var token = this.tokenGenerator.GenerateToken(request.Username);
+        var session = new UserSession
         {
-            return this.Unauthorized("Invalid credentials.");
-        }
-        catch (Exception ex)
-        {
-            return this.StatusCode(500, $"Internal error: {ex.Message}");
-        }
+            Username = request.Username,
+            Password = request.Password,
+            Wpia_hn_access = wpia_hn_access,
+            Wpia_hn_admin = wpia_hn_admin,
+        };
+        var sessionId = this.sessionManager.StoreSession(session);
+        return this.Ok(new { token, sessionId });
     }
 
     /// <summary>

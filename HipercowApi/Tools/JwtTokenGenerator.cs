@@ -9,9 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 /// <summary>
 /// Generate the JWT token.
 /// </summary>
-public class JwtTokenGenerator(IOptions<JwtSettings> settings)
+public class JwtTokenGenerator(JwtSettings settings)
 {
-    private readonly JwtSettings settings = settings.Value;
+    private readonly JwtSettings settings = settings;
 
     /// <summary>
     /// Generate the token for a given username.

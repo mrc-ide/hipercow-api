@@ -133,46 +133,6 @@ namespace HipercowApi.Tools
         }
 
         /// <summary>
-        /// Using LDAP, query and parse a list of groups that a DIDE
-        /// domain user belongs to.
-        /// </summary>
-        /// <param name="user">The username.</param>
-        /// <param name="ldap">A LdapConnection.</param>
-        /// <returns>
-        /// A list of names of groups.
-        /// </returns>
-        public static List<string> GetDomainGroups(string user, LdapConnection ldap)
-        {
-            List<string> groups = [];
-            SearchRequest searchRequest = new(
-            "OU=Users,OU=DIDE Users,DC=dide,DC=local",
-            "(&(objectCategory=person)(SAMAccountName=" + user + "))",
-            SearchScope.Subtree,
-            new string[] { "SAMAccountName", "memberOf", "cn" });
-
-            SearchResponse searchResponse = (SearchResponse)ldap.SendRequest(searchRequest);
-
-            if (searchResponse.Entries.Count == 1)
-            {
-                SearchResultEntry item = searchResponse.Entries[0];
-                for (int i = 0; i < item.Attributes["memberOf"].Count; i++)
-                {
-                    string result_part = item.Attributes["memberOf"][i].ToString()!;
-                    string[] result_split = result_part.Split([',']);
-                    for (int j = 0; j < (int)result_split.Length; j++)
-                    {
-                        if (result_split[j].StartsWith("CN"))
-                        {
-                            groups.Add(result_split[j].Substring(3));
-                        }
-                    }
-                }
-            }
-
-            return groups;
-        }
-
-        /// <summary>
         /// A helper shared between controllers, for checking that the JWT is
         /// valid, the session ID is valid, and the users match between them.
         /// </summary>

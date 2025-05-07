@@ -96,6 +96,7 @@ namespace HipercowApi
             builder.Services.AddSingleton<ISchedulerFactory, SchedulerFactory>();
             builder.Services.AddHostedService<MetricsUpdateService>();
             builder.Services.AddSingleton<JwtTokenGenerator>();
+            builder.Services.AddSingleton<ILdapManager, LdapManager>();
             builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<UserSessionManager>();
             var app = builder.Build();
