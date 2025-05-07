@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 /// <summary>
 /// Wrapper for creationg an LdapConnection, so we can mock/test.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class LdapManager : ILdapManager
 {
     private static readonly string LdapServer = "wpia-didedc2.dide.ic.ac.uk";
@@ -18,8 +19,8 @@ public class LdapManager : ILdapManager
     // Excluded from code coverage as this part is DIDE specific, which
     // we don't want to attempt from CI. It doesn't seem worth mocking.
 
-    [ExcludeFromCodeCoverage]
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     public LdapConnectionWrapper GetDideLdapConnection(ControllerBase controller, LoginRequest request)
     {
         try

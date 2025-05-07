@@ -2,6 +2,7 @@
 
 namespace HipercowApiUnitTests.Controllers
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.DirectoryServices.Protocols;
     using System.Security.Claims;
     using HipercowApi.Tools;
@@ -64,6 +65,7 @@ namespace HipercowApiUnitTests.Controllers
         /// Test for invalid credentials.
         /// </summary>
         [Fact]
+        [ExcludeFromCodeCoverage]
         public void AuthLogin_Works()
         {
             UserSessionManager usm = new(new MemoryCache(new MemoryCacheOptions()));

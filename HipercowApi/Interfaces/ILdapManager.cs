@@ -2,8 +2,8 @@
 
 namespace HipercowApi.Tools
 {
-    using Microsoft.AspNetCore.Mvc;
     using System.DirectoryServices.Protocols;
+    using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// Interface wrapper for LdapManager which authenticates against

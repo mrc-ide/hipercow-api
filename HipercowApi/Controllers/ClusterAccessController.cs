@@ -15,7 +15,6 @@ namespace HipercowApi.Controllers
     [Route("api/v1/[controller]")]
     public class ClusterAccessController : ControllerBase
     {
-        private readonly IClusterHandleCache clusterHandleCache;
         private readonly UserSessionManager sessionManager;
 
         /// <summary>
@@ -29,11 +28,9 @@ namespace HipercowApi.Controllers
         /// login details of previous sessions in the memory cache.
         /// </param>
         public ClusterAccessController(
-            IClusterHandleCache clusterHandleCache,
             UserSessionManager sessionManager)
         {
             this.sessionManager = sessionManager;
-            this.clusterHandleCache = clusterHandleCache;
         }
 
         /// <summary>
@@ -45,7 +42,7 @@ namespace HipercowApi.Controllers
         /// </returns>
         [Authorize]
         [HttpGet]
-        public IActionResult SecureAction([FromHeader(Name = "X-Session-Id")] string sessionId)
+        public IActionResult GetMyClusters([FromHeader(Name = "X-Session-Id")] string sessionId)
         {
             string? jwtUsername = this.User.Identity!.Name;
             UserSession? session = this.sessionManager.RetrieveSession(sessionId);
