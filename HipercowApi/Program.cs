@@ -27,7 +27,8 @@ namespace HipercowApi
 
             // Load JWT settings
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
+            builder.Services.AddSingleton(jwtSettings);
 
             builder.Services.AddAuthentication(options =>
             {

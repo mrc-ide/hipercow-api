@@ -21,9 +21,6 @@ namespace HipercowApi.Controllers
         /// Initializes a new instance of the
         /// <see cref="ClusterAccessController"/> class.
         /// </summary>
-        /// <param name="clusterHandleCache">The cluster handle cache so we can look up
-        /// the connected scheduler object for the requested cluster.
-        /// </param>
         /// <param name="sessionManager">The session manager so we can look up the
         /// login details of previous sessions in the memory cache.
         /// </param>
