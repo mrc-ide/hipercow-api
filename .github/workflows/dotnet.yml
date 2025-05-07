@@ -21,7 +21,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Install LDAP dependencies
-      run: sudo apt-get install -y libldap-2.4-2
+      run: sudo apt-get install -y libldap-common
     - name: Restore dependencies
       run: dotnet restore
     - name: Install dependencies for HipercowApi
