@@ -2,6 +2,7 @@
 
 using System.DirectoryServices.Protocols;
 using System.Net;
+using HipercowApi.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
@@ -9,8 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 /// </summary>
 public class AuthController(JwtTokenGenerator tokenGenerator, UserSessionManager sessionManager) : ControllerBase
 {
-    private static readonly string[] AttributeList = new string[] { "SAMAccountName", "memberOf", "cn" };
-
     private readonly JwtTokenGenerator tokenGenerator = tokenGenerator;
     private readonly string ldapServer = "wpia-didedc2.dide.ic.ac.uk";
     private readonly int ldapPort = 389;
@@ -32,47 +31,23 @@ public class AuthController(JwtTokenGenerator tokenGenerator, UserSessionManager
 
         try
         {
-            using var ldapConnection = new LdapConnection(new LdapDirectoryIdentifier(this.ldapServer, this.ldapPort));
-            var credentials = new NetworkCredential(request.Username, request.Password, this.domain);
-
-            ldapConnection.AuthType = AuthType.Negotiate;
-            ldapConnection.Bind(credentials); // Attempt bind
-
-            SearchRequest searchRequest = new(
-                    "OU=Users,OU=DIDE Users,DC=dide,DC=local",
-                    "(&(objectCategory=person)(SAMAccountName=" + request.Username + "))",
-                    SearchScope.Subtree,
-                    AttributeList);
-
-            SearchResponse searchResponse = (SearchResponse)ldapConnection.SendRequest(searchRequest);
-
-            // Look for interesting groups
-            bool wpia_hn_access = false;
-            bool wpia_hn_admin = false;
-
-            if (searchResponse.Entries.Count == 1)
-            {
-                SearchResultEntry item = searchResponse.Entries[0];
-                for (int i = 0; i < item.Attributes["memberOf"].Count; i++)
-                {
-                    string result_part = item.Attributes["memberOf"][i].ToString()!;
-                    string[] result_split = result_part.Split([',']);
-                    for (int j = 0; j < (int)result_split.Length; j++)
-                    {
-                        if (result_split[j].StartsWith("CN"))
-                        {
-                            string group = result_split[j].Substring(3);
-                            wpia_hn_access |= group == "WPIA-HN.HPC Users - All Nodes";
-                            wpia_hn_admin |= group == "WPIA-HN.HPC Administrators";
-                        }
-                    }
-                }
-            }
-
+            LdapDirectoryIdentifier ldapDirId = new(this.ldapServer, this.ldapPort);
+            LdapConnection ldap = new(ldapDirId);
+            NetworkCredential credentials = new(request.Username, request.Password, this.domain);
+            ldap.AuthType = AuthType.Negotiate;
+            ldap.Bind(credentials);
+            List<string> groups = Utils.GetDomainGroups(request.Username, ldap);
+            bool wpia_hn_access = groups.Contains("WPIA-HN.HPC Users - All Nodes");
+            bool wpia_hn_admin = groups.Contains("WPIA-HN.HPC Administrators");
             var token = this.tokenGenerator.GenerateToken(request.Username);
-            var session = new UserSession { Username = request.Username, Password = request.Password, Wpia_hn_access = wpia_hn_access, Wpia_hn_admin = wpia_hn_admin };
+            var session = new UserSession
+            {
+                Username = request.Username,
+                Password = request.Password,
+                Wpia_hn_access = wpia_hn_access,
+                Wpia_hn_admin = wpia_hn_admin,
+            };
             var sessionId = this.sessionManager.StoreSession(session);
-
             return this.Ok(new { token, sessionId });
         }
         catch (LdapException)
@@ -83,5 +58,25 @@ public class AuthController(JwtTokenGenerator tokenGenerator, UserSessionManager
         {
             return this.StatusCode(500, $"Internal error: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// The Logout endpoint. Remove session.
+    /// </summary>
+    /// <param name="sessionId">The session id to close and logout.</param>
+    /// <returns>The result, either Ok, or a standard error.</returns>
+    [HttpPost("logout")]
+    public IActionResult Logout([FromHeader(Name = "X-Session-Id")] string sessionId)
+    {
+        string? jwtUsername = this.User.Identity!.Name;
+        UserSession? session = this.sessionManager.RetrieveSession(sessionId);
+        IActionResult? result = Utils.CheckTokenAndSession(this, jwtUsername, session);
+        if (result is not null)
+        {
+            return result;
+        }
+
+        this.sessionManager.RemoveSession(sessionId);
+        return this.Ok();
     }
 }

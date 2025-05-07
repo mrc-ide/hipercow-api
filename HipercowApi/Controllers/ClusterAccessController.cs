@@ -47,25 +47,16 @@ namespace HipercowApi.Controllers
         [HttpGet]
         public IActionResult SecureAction([FromHeader(Name = "X-Session-Id")] string sessionId)
         {
-            var jwtUsername = this.User.Identity!.Name;
-            if (string.IsNullOrEmpty(jwtUsername))
+            string? jwtUsername = this.User.Identity!.Name;
+            UserSession? session = this.sessionManager.RetrieveSession(sessionId);
+            IActionResult? result = Utils.CheckTokenAndSession(this, jwtUsername, session);
+            if (result is not null)
             {
-                return this.Unauthorized("Missing user identity from token");
-            }
-
-            var session = this.sessionManager.RetrieveSession(sessionId);
-            if (session == null)
-            {
-                return this.Unauthorized("Session expired or invalid.");
-            }
-
-            if (!string.Equals(session.Username, jwtUsername, StringComparison.OrdinalIgnoreCase))
-            {
-                return this.Forbid("Session ID does not match the logged-in user.");
+                return result;
             }
 
             // Use session info:
-            if (session.Wpia_hn_access)
+            if (session!.Wpia_hn_access)
             {
                 return this.Ok("wpia-hn");
             }

@@ -18,7 +18,6 @@ public class UserSessionManager(IMemoryCache cache)
     public string StoreSession(UserSession session)
     {
         var sessionId = Guid.NewGuid().ToString();
-        session.Password = this.Encrypt(session.Password); // optional but recommended
         this.cache.Set(sessionId, session, this.sessionLifetime);
         return sessionId;
     }
@@ -31,24 +30,19 @@ public class UserSessionManager(IMemoryCache cache)
     public UserSession? RetrieveSession(string sessionId)
     {
         return this.cache.TryGetValue(sessionId, out UserSession? session)
-            ? this.DecryptSession(session!) // decrypt if encrypted
+            ? session
             : null;
     }
 
-    private string Encrypt(string plainText)
+    /// <summary>
+    /// Remove a session from memory.
+    /// </summary>
+    /// <param name="sessionId">The session id to remove.</param>
+    public void RemoveSession(string sessionId)
     {
-        // TODO: Replace with real encryption (e.g. DPAPI, AES)
-        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(plainText));
-    }
-
-    private string Decrypt(string encrypted)
-    {
-        return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encrypted));
-    }
-
-    private UserSession DecryptSession(UserSession session)
-    {
-        session.Password = this.Decrypt(session.Password);
-        return session;
+        if (this.cache.TryGetValue(sessionId, out UserSession? session))
+        {
+            this.cache.Remove(sessionId);
+        }
     }
 }

@@ -2,6 +2,8 @@
 
 namespace HipercowApi.Tools
 {
+    using System.DirectoryServices.Protocols;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
 
@@ -128,6 +130,77 @@ namespace HipercowApi.Tools
         public static JobState? HPCJobState(string name)
         {
             return Enum.TryParse(name, out JobState result) ? result : null;
+        }
+
+        /// <summary>
+        /// Using LDAP, query and parse a list of groups that a DIDE
+        /// domain user belongs to.
+        /// </summary>
+        /// <param name="user">The username.</param>
+        /// <param name="ldap">A LdapConnection.</param>
+        /// <returns>
+        /// A list of names of groups.
+        /// </returns>
+        public static List<string> GetDomainGroups(string user, LdapConnection ldap)
+        {
+            List<string> groups = [];
+            SearchRequest searchRequest = new(
+            "OU=Users,OU=DIDE Users,DC=dide,DC=local",
+            "(&(objectCategory=person)(SAMAccountName=" + user + "))",
+            SearchScope.Subtree,
+            new string[] { "SAMAccountName", "memberOf", "cn" });
+
+            SearchResponse searchResponse = (SearchResponse)ldap.SendRequest(searchRequest);
+
+            if (searchResponse.Entries.Count == 1)
+            {
+                SearchResultEntry item = searchResponse.Entries[0];
+                for (int i = 0; i < item.Attributes["memberOf"].Count; i++)
+                {
+                    string result_part = item.Attributes["memberOf"][i].ToString()!;
+                    string[] result_split = result_part.Split([',']);
+                    for (int j = 0; j < (int)result_split.Length; j++)
+                    {
+                        if (result_split[j].StartsWith("CN"))
+                        {
+                            groups.Add(result_split[j].Substring(3));
+                        }
+                    }
+                }
+            }
+
+            return groups;
+        }
+
+        /// <summary>
+        /// A helper shared between controllers, for checking that the JWT is
+        /// valid, the session ID is valid, and the users match between them.
+        /// </summary>
+        /// <param name="controller">The controller calling the test.</param>
+        /// <param name="jwtUsername">The username from the JWT (possibly null).</param>
+        /// <param name="session">The user session, possibly null.</param>
+        /// <returns>
+        /// An IActionResult? - an error-type code with message if a failure,
+        /// otherwise null if no error was triggered.
+        /// </returns>
+        public static IActionResult? CheckTokenAndSession(ControllerBase controller, string? jwtUsername, UserSession? session)
+        {
+            if (string.IsNullOrEmpty(jwtUsername))
+            {
+                return controller.Unauthorized("Missing user identity from token");
+            }
+
+            if (session is null)
+            {
+                return controller.Unauthorized("Session expired or invalid.");
+            }
+
+            if (!string.Equals(session.Username, jwtUsername, StringComparison.OrdinalIgnoreCase))
+            {
+                return controller.Forbid("Session ID does not match the logged-in user.");
+            }
+
+            return null;
         }
     }
 }
