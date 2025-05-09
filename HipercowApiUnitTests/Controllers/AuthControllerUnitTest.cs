@@ -5,6 +5,7 @@ namespace HipercowApiUnitTests.Controllers
     using System.Diagnostics.CodeAnalysis;
     using System.DirectoryServices.Protocols;
     using System.Security.Claims;
+    using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

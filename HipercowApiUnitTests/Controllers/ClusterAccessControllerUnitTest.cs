@@ -4,6 +4,7 @@ namespace HipercowApiUnitTests.Controllers
 {
     using System.Security.Claims;
     using HipercowApi.Controllers;
+    using HipercowApi.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Caching.Memory;

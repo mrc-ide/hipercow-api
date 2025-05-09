@@ -5,6 +5,7 @@ namespace HipercowApi
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Text;
+    using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.IdentityModel.Tokens;
@@ -27,7 +28,8 @@ namespace HipercowApi
 
             // Load JWT settings
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>() ??
+                throw new InvalidOperationException("JwtSettings section is missing or invalid in configuration.");
             builder.Services.AddSingleton(jwtSettings);
 
             builder.Services.AddAuthentication(options =>
@@ -43,11 +45,11 @@ namespace HipercowApi
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings!.Issuer,
-                    ValidAudience = jwtSettings!.Audience,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
                     NameClaimType = ClaimTypes.Name,
                     RoleClaimType = ClaimTypes.Role,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings!.SecretKey)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
                 };
             });
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();

@@ -1,5 +1,6 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
+using HipercowApi.Models;
 using Microsoft.Extensions.Caching.Memory;
 
 /// <summary>
@@ -40,7 +41,7 @@ public class UserSessionManager(IMemoryCache cache)
     /// <param name="sessionId">The session id to remove.</param>
     public void RemoveSession(string sessionId)
     {
-        if (this.cache.TryGetValue(sessionId, out UserSession? session))
+        if (this.cache.TryGetValue(sessionId, out _))
         {
             this.cache.Remove(sessionId);
         }

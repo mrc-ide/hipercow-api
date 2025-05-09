@@ -3,6 +3,7 @@
 namespace HipercowApiUnitTests.Tools
 {
     using HipercowApi.Controllers;
+    using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Caching.Memory;

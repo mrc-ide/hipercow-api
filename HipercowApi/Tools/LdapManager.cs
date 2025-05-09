@@ -73,13 +73,9 @@ public class LdapManager : ILdapManager
             for (int i = 0; i < item.Attributes["memberOf"].Count; i++)
             {
                 string result_part = item.Attributes["memberOf"][i].ToString()!;
-                string[] result_split = result_part.Split([',']);
-                for (int j = 0; j < (int)result_split.Length; j++)
+                foreach (string group in result_part.Split([',']).Where(g => g.StartsWith("CN=")))
                 {
-                    if (result_split[j].StartsWith("CN"))
-                    {
-                        groups.Add(result_split[j].Substring(3));
-                    }
+                    groups.Add(group.Substring(3));
                 }
             }
         }

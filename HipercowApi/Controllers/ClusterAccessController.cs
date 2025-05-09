@@ -2,6 +2,7 @@
 
 namespace HipercowApi.Controllers
 {
+    using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;

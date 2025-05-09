@@ -3,7 +3,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Options;
+using HipercowApi.Models;
 using Microsoft.IdentityModel.Tokens;
 
 /// <summary>

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Imperial College London. All rights reserved.
 
+using HipercowApi.Models;
 using HipercowApi.Tools;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,6 +66,6 @@ public class AuthController(JwtTokenGenerator tokenGenerator, UserSessionManager
         }
 
         this.sessionManager.RemoveSession(sessionId);
-        return this.Ok();
+        return this.NoContent();
     }
 }
