@@ -78,7 +78,7 @@ namespace HipercowApi.Tools
         /// changed within this window.</param>
         internal void UpdateByState(string cluster, JobState state, int maxHoursAgo)
         {
-            IScheduler scheduler = clusterHandleCache.GetClusterHandle(cluster)!;
+            IScheduler scheduler = _clusterHandleCache.GetClusterHandle(cluster)!;
 
             PropertyIdCollection props = [
                 JobPropertyIds.UserName, JobPropertyIds.Owner, JobPropertyIds.ChangeTime,
