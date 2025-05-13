@@ -52,38 +52,5 @@ namespace HipercowApiUnitTests.Tools
             Assert.Equal(JobState.Running, Utils.HPCJobState("Running"));
             Assert.Null(Utils.HPCJobState("Potato"));
         }
-
-        /// <summary>
-        /// JWT vs session verification works.
-        /// </summary>
-        [Fact]
-        public void CheckTokenAndSession_Works()
-        {
-            JwtSettings jwtSettings = new() { SecretKey = "key", Issuer = "issuer", Audience = "audience", ExpiresInMinutes = 1 };
-            AuthController ac = new AuthController(
-                new JwtTokenGenerator(jwtSettings),
-                new UserSessionManager(new MemoryCache(new MemoryCacheOptions())),
-                new LdapManager());
-
-            Assert.Equivalent(
-                ac.Unauthorized("Missing user identity from token"),
-                Utils.CheckTokenAndSession(ac, null, null));
-
-            Assert.Equivalent(
-                ac.Unauthorized("Session expired or invalid."),
-                Utils.CheckTokenAndSession(ac, "user", null));
-
-            UserSession session = new UserSession
-            {
-                Username = "abc",
-                Password = "def",
-                Wpia_hn_access = false,
-                Wpia_hn_admin = false,
-            };
-
-            Assert.Equivalent(
-                ac.Forbid("Session ID does not match the logged-in user."),
-                Utils.CheckTokenAndSession(ac, "potato", session));
-        }
     }
 }

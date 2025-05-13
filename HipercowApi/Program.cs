@@ -5,6 +5,7 @@ namespace HipercowApi
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Text;
+    using System.Web.Services.Description;
     using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,11 +27,8 @@ namespace HipercowApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Load JWT settings
-            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>() ??
-                throw new InvalidOperationException("JwtSettings section is missing or invalid in configuration.");
-            builder.Services.AddSingleton(jwtSettings);
+            builder.Services.AddSingleton<JwtSupport>();
+            JwtSupport jwtSupport = new JwtSupport();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -45,15 +43,15 @@ namespace HipercowApi
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audience,
+                    ValidIssuer = "Hipercow API",
+                    ValidAudience = "Hipercow Users",
                     NameClaimType = ClaimTypes.Name,
                     RoleClaimType = ClaimTypes.Role,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+                    IssuerSigningKey = new SymmetricSecurityKey(jwtSupport.SigningKey),
                 };
             });
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            builder.Services.AddAuthorization();
+            //builder.Services.AddAuthorization();
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -98,10 +96,8 @@ namespace HipercowApi
             builder.Services.AddSingleton<IClusterHandleCache, ClusterHandleCache>();
             builder.Services.AddSingleton<ISchedulerFactory, SchedulerFactory>();
             builder.Services.AddHostedService<MetricsUpdateService>();
-            builder.Services.AddSingleton<JwtTokenGenerator>();
             builder.Services.AddSingleton<ILdapManager, LdapManager>();
             builder.Services.AddMemoryCache();
-            builder.Services.AddSingleton<UserSessionManager>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

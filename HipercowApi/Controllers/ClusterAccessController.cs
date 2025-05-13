@@ -4,6 +4,7 @@ namespace HipercowApi.Controllers
 {
     using HipercowApi.Models;
     using HipercowApi.Tools;
+    using Jose;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -12,46 +13,33 @@ namespace HipercowApi.Controllers
     /// token, and provides the list of clusters that a certain
     /// user has access to.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ClusterAccessController"/> class.
+    /// </remarks>
+    /// <param name="keys">The JWT Keys.</param>
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class ClusterAccessController : ControllerBase
+    public class ClusterAccessController(JwtSupport keys) : ControllerBase
     {
-        private readonly UserSessionManager sessionManager;
-
-        /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="ClusterAccessController"/> class.
-        /// </summary>
-        /// <param name="sessionManager">The session manager so we can look up the
-        /// login details of previous sessions in the memory cache.
-        /// </param>
-        public ClusterAccessController(
-            UserSessionManager sessionManager)
-        {
-            this.sessionManager = sessionManager;
-        }
+        private JwtSupport keys = keys;
 
         /// <summary>
         /// Authenticated endpoint to return the list of clusters available to a user.
         /// </summary>
-        /// <param name="sessionId">Session Id for retrieving login details.</param>
+        /// <param name="authHeader">Header information to get the encrypted JWT from.</param>
         /// <returns>
         /// A list of cluster names.
         /// </returns>
-        [Authorize]
         [HttpGet]
-        public IActionResult GetMyClusters([FromHeader(Name = "X-Session-Id")] string sessionId)
+        public IActionResult GetMyClusters([FromHeader(Name = "Authorization")] string authHeader)
         {
-            string? jwtUsername = this.User.Identity!.Name;
-            UserSession? session = this.sessionManager.RetrieveSession(sessionId);
-            IActionResult? result = Utils.CheckTokenAndSession(this, jwtUsername, session);
-            if (result is not null)
-            {
-                return result;
-            }
+            var token = authHeader.Replace("Bearer ", string.Empty);
+            var dict = this.keys.DecryptToken(token);
 
-            // Use session info:
-            if (session!.Wpia_hn_access)
+            var jwtUsername = dict["sub"];
+            var wpiahn_access = dict["wpia_hn_access"].Equals(true);
+
+            if (wpiahn_access)
             {
                 return this.Ok("wpia-hn");
             }

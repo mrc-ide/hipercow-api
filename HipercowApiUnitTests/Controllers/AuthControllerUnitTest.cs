@@ -23,10 +23,9 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void AuthInvalidLogin_Works()
         {
-            JwtSettings jwtSettings = new() { SecretKey = "key", Issuer = "issuer", Audience = "audience", ExpiresInMinutes = 1 };
+            JwtSupport jwtSupport = new JwtSupport();
             AuthController ac = new AuthController(
-                new JwtTokenGenerator(jwtSettings),
-                new UserSessionManager(new MemoryCache(new MemoryCacheOptions())),
+                jwtSupport,
                 new LdapManager());
 
             LoginRequest request = new LoginRequest { Username = string.Empty, Password = string.Empty };
@@ -44,11 +43,10 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void AuthLoginFail_Works()
         {
-            JwtSettings jwtSettings = new() { SecretKey = "key", Issuer = "issuer", Audience = "audience", ExpiresInMinutes = 1 };
+            JwtSupport jwtSupport = new JwtSupport();
             var mockLM = new Mock<ILdapManager>();
             AuthController ac = new AuthController(
-                new JwtTokenGenerator(jwtSettings),
-                new UserSessionManager(new MemoryCache(new MemoryCacheOptions())),
+                jwtSupport,
                 mockLM.Object);
 
             LoginRequest request = new LoginRequest { Username = "abc", Password = "def" };
@@ -69,18 +67,10 @@ namespace HipercowApiUnitTests.Controllers
         [ExcludeFromCodeCoverage]
         public void AuthLogin_Works()
         {
-            UserSessionManager usm = new(new MemoryCache(new MemoryCacheOptions()));
-            JwtSettings jwtSettings = new()
-            {
-                SecretKey = "1234567890123456789012345678901234",
-                Issuer = "issuer",
-                Audience = "audience",
-                ExpiresInMinutes = 1,
-            };
+            JwtSupport jwtSupport = new JwtSupport();
             var mockLM = new Mock<ILdapManager>();
             AuthController ac = new(
-                new JwtTokenGenerator(jwtSettings),
-                usm,
+                jwtSupport,
                 mockLM.Object);
 
             var user = new ClaimsPrincipal(
@@ -114,26 +104,8 @@ namespace HipercowApiUnitTests.Controllers
             mockLM.Setup(x => x.GetDomainGroups("abc", success.Connection)).Returns(["WPIA-HN.HPC Users - All Nodes"]);
             IActionResult res = ac.Login(request);
             var okResult = Assert.IsType<OkObjectResult>(res);
-            dynamic? value = okResult.Value;
-            string token = value!.token;
-            string sessionId = value!.sessionId;
-
+            dynamic? token = okResult.Value;
             Assert.NotNull(token);
-            Assert.NotNull(sessionId);
-
-            UserSession? session = usm.RetrieveSession(sessionId);
-            Assert.NotNull(session);
-            Assert.Equal("abc", session.Username);
-            Assert.Equal("def", session.Password);
-            Assert.False(session.Wpia_hn_admin);
-            Assert.True(session.Wpia_hn_access);
-
-            res = ac.Logout(sessionId);
-            session = usm.RetrieveSession(sessionId);
-            Assert.Null(session);
-
-            res = ac.Logout(sessionId);
-            Assert.Equivalent(ac.Unauthorized("Session expired or invalid."), res);
         }
     }
 }

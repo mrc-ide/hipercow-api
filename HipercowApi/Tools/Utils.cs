@@ -132,36 +132,5 @@ namespace HipercowApi.Tools
         {
             return Enum.TryParse(name, out JobState result) ? result : null;
         }
-
-        /// <summary>
-        /// A helper shared between controllers, for checking that the JWT is
-        /// valid, the session ID is valid, and the users match between them.
-        /// </summary>
-        /// <param name="controller">The controller calling the test.</param>
-        /// <param name="jwtUsername">The username from the JWT (possibly null).</param>
-        /// <param name="session">The user session, possibly null.</param>
-        /// <returns>
-        /// An IActionResult? - an error-type code with message if a failure,
-        /// otherwise null if no error was triggered.
-        /// </returns>
-        public static IActionResult? CheckTokenAndSession(ControllerBase controller, string? jwtUsername, UserSession? session)
-        {
-            if (string.IsNullOrEmpty(jwtUsername))
-            {
-                return controller.Unauthorized("Missing user identity from token");
-            }
-
-            if (session is null)
-            {
-                return controller.Unauthorized("Session expired or invalid.");
-            }
-
-            if (!string.Equals(session.Username, jwtUsername, StringComparison.OrdinalIgnoreCase))
-            {
-                return controller.Forbid("Session ID does not match the logged-in user.");
-            }
-
-            return null;
-        }
     }
 }
