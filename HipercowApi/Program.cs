@@ -2,14 +2,7 @@
 namespace HipercowApi
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Security.Claims;
-    using System.Text;
-    using System.Web.Services.Description;
-    using HipercowApi.Models;
     using HipercowApi.Tools;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.IdentityModel.Tokens;
     using Microsoft.OpenApi.Models;
     using Prometheus;
 
@@ -27,38 +20,15 @@ namespace HipercowApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddSingleton<JwtSupport>();
-            JwtSupport jwtSupport = new JwtSupport();
-
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = "Hipercow API",
-                    ValidAudience = "Hipercow Users",
-                    NameClaimType = ClaimTypes.Name,
-                    RoleClaimType = ClaimTypes.Role,
-                    IssuerSigningKey = new SymmetricSecurityKey(jwtSupport.SigningKey),
-                };
-            });
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            //builder.Services.AddAuthorization();
-
             // Add services to the container.
             builder.Services.AddControllers();
 
             // Learn more about configuring Swagger/OpenAPI at
             // https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
+
+            // Below just arranges the Swagger test so we can add
+            // Bearer xxxxx for the JWT using the Authorize button.
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hipercow API", Version = "v1" });
@@ -97,6 +67,7 @@ namespace HipercowApi
             builder.Services.AddSingleton<ISchedulerFactory, SchedulerFactory>();
             builder.Services.AddHostedService<MetricsUpdateService>();
             builder.Services.AddSingleton<ILdapManager, LdapManager>();
+            builder.Services.AddSingleton<JwtSupport>();
             builder.Services.AddMemoryCache();
             var app = builder.Build();
 
@@ -111,9 +82,7 @@ namespace HipercowApi
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
-
             app.UseMetricServer();
-
             app.Run();
         }
     }
