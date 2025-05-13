@@ -21,13 +21,13 @@ namespace HipercowApi.Tools
     public class MetricsUpdateService(
         IClusterHandleCache clusterHandleCache) : BackgroundService
     {
-        private static readonly List<string> InterestingStates = new()
+        private static readonly List<string> _InterestingStates = new()
         {
             "Running", "Queued", "Finished", "Failed", "Cancelled",
         };
 
-        private readonly IClusterHandleCache clusterHandleCache = clusterHandleCache;
-        private readonly Dictionary<string, Dictionary<string, dynamic>> userJobs = [];
+        private readonly IClusterHandleCache _clusterHandleCache = clusterHandleCache;
+        private readonly Dictionary<string, Dictionary<string, dynamic>> _userJobs = [];
 
         /// <summary>
         /// Calculate core hours for a Finished or Running job.
@@ -61,7 +61,7 @@ namespace HipercowApi.Tools
         /// </returns>
         internal Dictionary<string, Dictionary<string, dynamic>> GetUserJobs()
         {
-            return this.userJobs;
+            return _userJobs;
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace HipercowApi.Tools
         /// changed within this window.</param>
         internal void UpdateByState(string cluster, JobState state, int maxHoursAgo)
         {
-            IScheduler scheduler = this.clusterHandleCache.GetClusterHandle(cluster)!;
+            IScheduler scheduler = clusterHandleCache.GetClusterHandle(cluster)!;
 
             PropertyIdCollection props = [
                 JobPropertyIds.UserName, JobPropertyIds.Owner, JobPropertyIds.ChangeTime,
@@ -114,12 +114,12 @@ namespace HipercowApi.Tools
                 user = (user.Trim() == string.Empty) ? owner : user;
                 user = user.Replace("DIDE\\", string.Empty);
 
-                this.userJobs.TryGetValue(user, out Dictionary<string, dynamic>? value);
+                _userJobs.TryGetValue(user, out Dictionary<string, dynamic>? value);
                 if (value is null)
                 {
-                    value = InterestingStates.ToDictionary(state => state, _ => (dynamic)0);
+                    value = _InterestingStates.ToDictionary(state => state, _ => (dynamic)0);
                     value["coreHours"] = 0.0f;
-                    this.userJobs.Add(user, value);
+                    _userJobs.Add(user, value);
                 }
 
                 value[stateName]++;
@@ -138,11 +138,11 @@ namespace HipercowApi.Tools
         [ExcludeFromCodeCoverage]
         internal void UpdateAllMetrics(string cluster)
         {
-            this.UpdateByState(cluster, JobState.Running, int.MaxValue);
-            this.UpdateByState(cluster, JobState.Queued, int.MaxValue);
-            this.UpdateByState(cluster, JobState.Finished, 24);
-            this.UpdateByState(cluster, JobState.Failed, 24);
-            this.UpdateByState(cluster, JobState.Canceled, 24);
+            UpdateByState(cluster, JobState.Running, int.MaxValue);
+            UpdateByState(cluster, JobState.Queued, int.MaxValue);
+            UpdateByState(cluster, JobState.Finished, 24);
+            UpdateByState(cluster, JobState.Failed, 24);
+            UpdateByState(cluster, JobState.Canceled, 24);
         }
 
         /// <summary>
@@ -160,13 +160,13 @@ namespace HipercowApi.Tools
                 List<string> clusters = DideConstants.GetDideClusters();
                 foreach (var cluster in clusters)
                 {
-                    this.userJobs.Clear();
-                    this.UpdateAllMetrics(cluster);
+                    _userJobs.Clear();
+                    UpdateAllMetrics(cluster);
 
-                    foreach (var user in this.userJobs.Keys)
+                    foreach (var user in _userJobs.Keys)
                     {
-                        var details = this.userJobs[user];
-                        foreach (string state in InterestingStates)
+                        var details = _userJobs[user];
+                        foreach (string state in _InterestingStates)
                         {
                             MetricsRegistry.JobsGauge.
                                 WithLabels([cluster, user, state]).

@@ -2,10 +2,7 @@
 
 namespace HipercowApi.Controllers
 {
-    using HipercowApi.Models;
     using HipercowApi.Tools;
-    using Jose;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -16,12 +13,12 @@ namespace HipercowApi.Controllers
     /// <remarks>
     /// Initializes a new instance of the <see cref="ClusterAccessController"/> class.
     /// </remarks>
-    /// <param name="keys">The JWT Keys.</param>
+    /// <param name="jwtSupport">Our class for encrypting JWTs.</param>
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class ClusterAccessController(JwtSupport keys) : ControllerBase
+    public class ClusterAccessController(JwtSupport jwtSupport) : ControllerBase
     {
-        private JwtSupport keys = keys;
+        private readonly JwtSupport _jwtSupport = jwtSupport;
 
         /// <summary>
         /// Authenticated endpoint to return the list of clusters available to a user.
@@ -34,18 +31,18 @@ namespace HipercowApi.Controllers
         public IActionResult GetMyClusters([FromHeader(Name = "Authorization")] string authHeader)
         {
             var token = authHeader.Replace("Bearer ", string.Empty);
-            var dict = this.keys.DecryptToken(token);
+            var dict = _jwtSupport.DecryptToken(token);
 
             var jwtUsername = dict["sub"];
             var wpiahn_access = dict["wpia_hn_access"].Equals(true);
 
             if (wpiahn_access)
             {
-                return this.Ok("wpia-hn");
+                return Ok("wpia-hn");
             }
             else
             {
-                return this.Unauthorized("Domain authentication ok, but no access to any clusters.");
+                return Unauthorized("Domain authentication ok, but no access to any clusters.");
             }
         }
     }

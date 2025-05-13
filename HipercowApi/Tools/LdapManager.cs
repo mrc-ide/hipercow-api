@@ -12,9 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 [ExcludeFromCodeCoverage]
 public class LdapManager : ILdapManager
 {
-    private static readonly string LdapServer = "wpia-didedc2.dide.ic.ac.uk";
-    private static readonly int LdapPort = 389;
-    private static readonly string Domain = "dide.local";
+    private static readonly string _LdapServer = "wpia-didedc2.dide.ic.ac.uk";
+    private static readonly int _LdapPort = 389;
+    private static readonly string _Domain = "dide.local";
 
     // Excluded from code coverage as this part is DIDE specific, which
     // we don't want to attempt from CI. It doesn't seem worth mocking.
@@ -25,9 +25,9 @@ public class LdapManager : ILdapManager
     {
         try
         {
-            LdapDirectoryIdentifier ldapDirId = new(LdapServer, LdapPort);
+            LdapDirectoryIdentifier ldapDirId = new(_LdapServer, _LdapPort);
             LdapConnection ldap = new(ldapDirId);
-            NetworkCredential credentials = new(request.Username, request.Password, Domain);
+            NetworkCredential credentials = new(request.Username, request.Password, _Domain);
             ldap.AuthType = AuthType.Negotiate;
             ldap.Bind(credentials);
             return new LdapConnectionWrapper

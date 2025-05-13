@@ -9,30 +9,24 @@ namespace HipercowApi.Controllers
     /// <summary>
     /// The /joblist endpoint.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="JobListController"/> class.
+    /// </remarks>
+    /// <param name="jobListQuery">
+    /// The JobListQuery object for dependency injection.
+    /// Contains GetJobList function.
+    /// </param>
+    /// <param name="clusterHandleCache">The ClusterHandleCache object so we can
+    /// retrieve the connected scheduler object for the requested cluster.
+    /// </param>
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class JobListController : ControllerBase
+    public class JobListController(
+        IJobListQuery jobListQuery,
+        IClusterHandleCache clusterHandleCache) : ControllerBase
     {
-        private readonly IClusterHandleCache clusterHandleCache;
-        private readonly IJobListQuery jobListQuery;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JobListController"/> class.
-        /// </summary>
-        /// <param name="jobListQuery">
-        /// The JobListQuery object for dependency injection.
-        /// Contains GetJobList function.
-        /// </param>
-        /// <param name="clusterHandleCache">The ClusterHandleCache object so we can
-        /// retrieve the connected scheduler object for the requested cluster.
-        /// </param>
-        public JobListController(
-            IJobListQuery jobListQuery,
-            IClusterHandleCache clusterHandleCache)
-        {
-            this.jobListQuery = jobListQuery;
-            this.clusterHandleCache = clusterHandleCache;
-        }
+        private readonly IClusterHandleCache _clusterHandleCache = clusterHandleCache;
+        private readonly IJobListQuery _jobListQuery = jobListQuery;
 
         /// <summary>
         /// Endpoint to return a list of jobs and information about them.
@@ -55,14 +49,14 @@ namespace HipercowApi.Controllers
         {
             if ((state is not null) && (Utils.HPCJobState(state) is null))
             {
-                return this.BadRequest("Job State " + state + " not found. " +
+                return BadRequest("Job State " + state + " not found. " +
                     "Options: Canceled, Failed, Finished, Queued, Running or leave empty.");
             }
 
-            IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster);
+            IScheduler? scheduler = _clusterHandleCache.GetClusterHandle(cluster);
             return scheduler is null ?
-                this.NotFound() :
-                this.Ok(this.jobListQuery.GetJobList(
+                NotFound() :
+                Ok(_jobListQuery.GetJobList(
                     cluster, scheduler, user, state, maxRows));
         }
     }

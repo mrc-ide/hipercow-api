@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Imperial College London. All rights reserved.
 
-using HipercowApi.Models;
 using HipercowApi.Tools;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,8 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/v1/[controller]")]
 public class AuthController(JwtSupport jwtSupport, ILdapManager ldapManager) : ControllerBase
 {
-    private readonly JwtSupport jwtSupport = jwtSupport;
-    private readonly ILdapManager ldapManager = ldapManager;
+    private readonly JwtSupport _jwtSupport = jwtSupport;
+    private readonly ILdapManager _ldapManager = ldapManager;
 
     /// <summary>
     /// The Login endpoint. Accept username and password and return a JWT and session ID.
@@ -24,22 +23,22 @@ public class AuthController(JwtSupport jwtSupport, ILdapManager ldapManager) : C
     {
         if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
         {
-            return this.BadRequest("Username or password cannot be empty.");
+            return BadRequest("Username or password cannot be empty.");
         }
 
-        LdapConnectionWrapper ldap = this.ldapManager.GetDideLdapConnection(this, request);
+        LdapConnectionWrapper ldap = _ldapManager.GetDideLdapConnection(this, request);
         if (ldap.Connection == null)
         {
             return ldap.Result;
         }
 
-        List<string> groups = this.ldapManager.GetDomainGroups(request.Username, ldap.Connection);
-        var token = this.jwtSupport.GenerateEncryptedToken(
+        List<string> groups = _ldapManager.GetDomainGroups(request.Username, ldap.Connection);
+        var token = _jwtSupport.GenerateEncryptedToken(
             request.Username,
             request.Password,
             groups.Contains("WPIA-HN.HPC Users - All Nodes"),
             groups.Contains("WPIA-HN.HPC Administrators"));
 
-        return this.Ok(token);
+        return Ok(token);
     }
 }

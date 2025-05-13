@@ -18,8 +18,8 @@ namespace HipercowApi.Tools
         /// </summary>
         public JwtSupport()
         {
-            this.SigningKey = GenerateRandomKey(32);    // 256-bit for HMAC-SHA256
-            this.EncryptionKey = GenerateRandomKey(32); // 256-bit for AES-256
+            SigningKey = GenerateRandomKey(32);    // 256-bit for HMAC-SHA256
+            EncryptionKey = GenerateRandomKey(32); // 256-bit for AES-256
         }
 
         /// <summary>
@@ -41,13 +41,13 @@ namespace HipercowApi.Tools
         {
             string signedJwt = JWT.Decode(
                     token,
-                    this.EncryptionKey,
+                    EncryptionKey,
                     JweAlgorithm.A256KW,
                     JweEncryption.A256CBC_HS512);
 
             var payload = JWT.Decode<Dictionary<string, object>>(
                 signedJwt,
-                this.SigningKey,
+                SigningKey,
                 JwsAlgorithm.HS256);
 
             return payload;
@@ -82,11 +82,11 @@ namespace HipercowApi.Tools
             { JwtRegisteredClaimNames.Aud, "Hipercow Users" },
         };
 
-            string signedJwt = JWT.Encode(payload, this.SigningKey, JwsAlgorithm.HS256);
+            string signedJwt = JWT.Encode(payload, SigningKey, JwsAlgorithm.HS256);
 
             string encryptedJwt = JWT.EncodeBytes(
                 Encoding.UTF8.GetBytes(signedJwt),
-                this.EncryptionKey,
+                EncryptionKey,
                 JweAlgorithm.A256KW,
                 JweEncryption.A256CBC_HS512,
                 extraHeaders: new Dictionary<string, object> { { "cty", "JWT" } });

@@ -2,9 +2,6 @@
 
 namespace HipercowApi.Tools
 {
-    using System.DirectoryServices.Protocols;
-    using HipercowApi.Models;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
 

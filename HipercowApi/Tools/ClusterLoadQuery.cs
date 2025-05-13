@@ -3,7 +3,6 @@
 namespace HipercowApi.Tools
 {
     using HipercowApi.Models;
-    using Microsoft.AspNetCore.SignalR;
     using Microsoft.Hpc.Scheduler;
     using Microsoft.Hpc.Scheduler.Properties;
 
