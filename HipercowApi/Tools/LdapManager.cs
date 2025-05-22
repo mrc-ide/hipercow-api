@@ -3,8 +3,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.Protocols;
 using System.Net;
+using Hipercow_api.Tools.Exceptions;
 using HipercowApi.Tools;
-using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
 /// Wrapper for creationg an LdapConnection, so we can mock/test.
@@ -16,25 +16,39 @@ public class LdapManager : ILdapManager
     private static readonly int _LdapPort = 389;
     private static readonly string _Domain = "dide.local";
 
-    // Excluded from code coverage as this part is DIDE specific, which
-    // we don't want to attempt from CI. It doesn't seem worth mocking.
+    /// <inheritdoc/>
+    public NetworkCredential GetLdapCredentials(LoginRequest request)
+    {
+        if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
+        {
+            throw new LdapEmptyUsernamePassword();
+        }
+
+        return new NetworkCredential(request.Username, request.Password, _Domain);
+    }
+
+    /// <inheritdoc/>
+    public LdapConnection GetLdapConnection(NetworkCredential creds)
+    {
+        LdapDirectoryIdentifier ldapDirId = new(_LdapServer, _LdapPort);
+        LdapConnection ldap = new(ldapDirId)
+        {
+            AuthType = AuthType.Negotiate,
+        };
+        return ldap;
+    }
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public LdapConnection? GetDideLdapConnection(LoginRequest request)
+    public void DoBind(LdapConnection ldap, NetworkCredential credentials)
     {
         try
         {
-            LdapDirectoryIdentifier ldapDirId = new(_LdapServer, _LdapPort);
-            LdapConnection ldap = new(ldapDirId);
-            NetworkCredential credentials = new(request.Username, request.Password, _Domain);
-            ldap.AuthType = AuthType.Negotiate;
             ldap.Bind(credentials);
-            return ldap;
         }
-        catch (LdapException)
+        catch
         {
-            return null;
+            throw new LdapAuthFailure(credentials.UserName);
         }
     }
 
@@ -50,17 +64,23 @@ public class LdapManager : ILdapManager
             ["SAMAccountName", "memberOf", "cn"]);
 
         SearchResponse searchResponse = (SearchResponse)ldap.SendRequest(searchRequest);
-
-        if (searchResponse.Entries.Count == 1)
+        if (searchResponse.Entries.Count == 0)
         {
-            SearchResultEntry item = searchResponse.Entries[0];
-            for (int i = 0; i < item.Attributes["memberOf"].Count; i++)
+            return groups;
+        }
+
+        SearchResultEntry item = searchResponse.Entries[0];
+        if (!item.Attributes.Contains("memberOf"))
+        {
+            return groups;
+        }
+
+        for (int i = 0; i < item.Attributes["memberOf"].Count; i++)
+        {
+            string result_part = item.Attributes["memberOf"][i].ToString()!;
+            foreach (string group in result_part.Split([',']).Where(g => g.StartsWith("CN=")))
             {
-                string result_part = item.Attributes["memberOf"][i].ToString()!;
-                foreach (string group in result_part.Split([',']).Where(g => g.StartsWith("CN=")))
-                {
-                    groups.Add(group.Substring(3));
-                }
+                groups.Add(group.Substring(3));
             }
         }
 

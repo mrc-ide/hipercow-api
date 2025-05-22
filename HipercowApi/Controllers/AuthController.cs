@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Imperial College London. All rights reserved.
 
+using System.DirectoryServices.ActiveDirectory;
 using System.DirectoryServices.Protocols;
+using System.Net;
 using HipercowApi.Tools;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,17 +24,9 @@ public class AuthController(JwtSupport jwtSupport, ILdapManager ldapManager) : C
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-        {
-            return BadRequest("Username or password cannot be empty.");
-        }
-
-        LdapConnection? ldap = _ldapManager.GetDideLdapConnection(request);
-        if (ldap is null)
-        {
-            return Unauthorized("Failed to login");
-        }
-
+        NetworkCredential credentials = _ldapManager.GetLdapCredentials(request);
+        LdapConnection ldap = _ldapManager.GetLdapConnection(credentials);
+        _ldapManager.DoBind(ldap, credentials);
         List<string> groups = _ldapManager.GetDomainGroups(request.Username, ldap);
         return Ok(_jwtSupport.GenerateEncryptedToken(
             request.Username,

@@ -2,6 +2,7 @@
 
 namespace HipercowApi.Controllers
 {
+    using Hipercow_api.Tools.Exceptions;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Mvc;
 
@@ -42,7 +43,7 @@ namespace HipercowApi.Controllers
             }
             else
             {
-                return Unauthorized("Domain authentication ok, but no access to any clusters.");
+                throw new LdapNoClusterPermissions((string)jwtUsername);
             }
         }
     }

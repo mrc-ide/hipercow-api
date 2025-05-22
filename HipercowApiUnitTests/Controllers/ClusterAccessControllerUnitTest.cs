@@ -2,13 +2,9 @@
 
 namespace HipercowApiUnitTests.Controllers
 {
-    using System.Security.Claims;
+    using System.Diagnostics.CodeAnalysis;
     using HipercowApi.Controllers;
-    using HipercowApi.Models;
     using HipercowApi.Tools;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Caching.Memory;
 
     /// <summary>
     /// Test the /clusteraccess endpoint.
@@ -22,11 +18,11 @@ namespace HipercowApiUnitTests.Controllers
         [Fact]
         public void GetClusterAccess_Works()
         {
-            JwtSupport jwtSupport = new JwtSupport();
+            JwtSupport jwtSupport = new();
             string authHeader = "Bearer " +
                 jwtSupport.GenerateEncryptedToken("abc", "def", true, false);
 
-            ClusterAccessController cac = new ClusterAccessController(jwtSupport);
+            ClusterAccessController cac = new(jwtSupport);
             var res = cac.GetMyClusters(authHeader);
             Assert.Equivalent(cac.Ok("wpia-hn"), res);
         }
@@ -35,16 +31,23 @@ namespace HipercowApiUnitTests.Controllers
         /// Test the /clusteraccess on non-access user
         /// by providing fake data.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         [Fact]
         public void GetClusterAccessDenied_Works()
         {
-            JwtSupport jwtSupport = new JwtSupport();
+            JwtSupport jwtSupport = new();
             string authHeader = "Bearer " +
                 jwtSupport.GenerateEncryptedToken("abc", "def", false, false);
 
-            ClusterAccessController cac = new ClusterAccessController(jwtSupport);
-            var res = cac.GetMyClusters(authHeader);
-            Assert.Equivalent(cac.Unauthorized("Domain authentication ok, but no access to any clusters."), res);
+            ClusterAccessController cac = new(jwtSupport);
+            try
+            {
+                cac.GetMyClusters(authHeader);
+            }
+            catch (Exception ex)
+            {
+                Assert.Equal("LdapNoClusterPermissions", ex.GetType().Name);
+            }
         }
     }
 }

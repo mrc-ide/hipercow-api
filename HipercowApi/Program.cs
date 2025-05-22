@@ -19,8 +19,6 @@ namespace HipercowApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
             builder.Services.AddControllers();
 
             // Learn more about configuring Swagger/OpenAPI at
@@ -68,8 +66,8 @@ namespace HipercowApi
             builder.Services.AddHostedService<MetricsUpdateService>();
             builder.Services.AddSingleton<ILdapManager, LdapManager>();
             builder.Services.AddSingleton<JwtSupport>();
-            builder.Services.AddMemoryCache();
             var app = builder.Build();
+            app.UseMiddleware<HipercowAPI.Tools.ExceptionHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

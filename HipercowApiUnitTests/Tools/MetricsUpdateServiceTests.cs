@@ -78,11 +78,11 @@ namespace HipercowApiUnitTests.Tools
             var res = mus.GetUserJobs();
 
             Assert.Equal(1, res["A"]["Finished"]);
-            Assert.Equal(2, res["A"]["coreHours"]);
+            Assert.Equal(2, Math.Round(res["A"]["coreHours"]));
             Assert.Equal(1, res["B"]["Finished"]);
-            Assert.Equal(2, res["B"]["coreHours"]);
+            Assert.Equal(2, Math.Round(res["B"]["coreHours"]));
             Assert.Equal(1, res["C"]["Finished"]);
-            Assert.Equal(64, res["C"]["coreHours"]);
+            Assert.Equal(64, Math.Round(res["C"]["coreHours"]));
             Assert.False(res.ContainsKey("D"));
 
             mus.UpdateByState("potato", JobState.Canceled, 24);

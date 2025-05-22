@@ -4,7 +4,9 @@ namespace HipercowApiUnitTests.Controllers
 {
     using System.Diagnostics.CodeAnalysis;
     using System.DirectoryServices.Protocols;
+    using System.Net;
     using System.Security.Claims;
+    using Hipercow_api.Tools.Exceptions;
     using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Http;
@@ -21,39 +23,42 @@ namespace HipercowApiUnitTests.Controllers
         /// Test for empty login.
         /// </summary>
         [Fact]
+        [ExcludeFromCodeCoverage]
         public void AuthInvalidLogin_Works()
         {
-            JwtSupport jwtSupport = new JwtSupport();
-            AuthController ac = new AuthController(
+            JwtSupport jwtSupport = new();
+            AuthController ac = new(
                 jwtSupport,
                 new LdapManager());
 
-            LoginRequest request = new LoginRequest { Username = string.Empty, Password = string.Empty };
-            IActionResult res = ac.Login(request);
-            Assert.Equivalent(res, ac.BadRequest("Username or password cannot be empty."));
+            LoginRequest request = new() { Username = string.Empty, Password = string.Empty };
+            Assert.Throws<LdapEmptyUsernamePassword>(() => ac.Login(request));
 
-            request = new LoginRequest { Username = "bob", Password = string.Empty };
-            res = ac.Login(request);
-            Assert.Equivalent(res, ac.BadRequest("Username or password cannot be empty."));
+            request = new() { Username = "bob", Password = string.Empty };
+            Assert.Throws<LdapEmptyUsernamePassword>(() => ac.Login(request));
         }
 
         /// <summary>
         /// Test for invalid credentials.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         [Fact]
         public void AuthLoginFail_Works()
         {
-            JwtSupport jwtSupport = new JwtSupport();
+            JwtSupport jwtSupport = new();
             var mockLM = new Mock<ILdapManager>();
-            AuthController ac = new AuthController(
+            NetworkCredential creds = new NetworkCredential("abc", "def", "domain.com");
+            mockLM.Setup(x => x.GetLdapCredentials(It.IsAny<LoginRequest>())).Returns(creds);
+            mockLM.Setup(x => x.GetLdapConnection(It.IsAny<NetworkCredential>())).Verifiable();
+            mockLM.Setup(x => x.DoBind(It.IsAny<LdapConnection>(), It.IsAny<NetworkCredential>()))
+                  .Throws(new LdapAuthFailure("abc"));
+
+            AuthController ac = new(
                 jwtSupport,
                 mockLM.Object);
 
-            LoginRequest request = new LoginRequest { Username = "abc", Password = "def" };
-            LdapConnection? failed = null;
-            mockLM.Setup(x => x.GetDideLdapConnection(request)).Returns(failed);
-            IActionResult res = ac.Login(request);
-            Assert.Equivalent(res, ac.Unauthorized("Failed to login"));
+            LoginRequest request = new() { Username = "abc", Password = "def" };
+            Assert.Throws<LdapAuthFailure>(() => ac.Login(request));
         }
 
         /// <summary>
@@ -91,7 +96,8 @@ namespace HipercowApiUnitTests.Controllers
 
             LoginRequest request = new() { Username = "abc", Password = "def" };
 
-            mockLM.Setup(x => x.GetDideLdapConnection(request)).Returns(fakeLdap);
+            mockLM.Setup(x => x.GetLdapConnection(It.IsAny<NetworkCredential>())).Returns(fakeLdap);
+            mockLM.Setup(x => x.DoBind(It.IsAny<LdapConnection>(), It.IsAny<NetworkCredential>())).Verifiable();
             mockLM.Setup(x => x.GetDomainGroups("abc", fakeLdap)).Returns(["WPIA-HN.HPC Users - All Nodes"]);
             IActionResult res = ac.Login(request);
             var okResult = Assert.IsType<OkObjectResult>(res);

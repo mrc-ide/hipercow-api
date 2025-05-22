@@ -3,6 +3,7 @@
 namespace HipercowApi.Tools
 {
     using System.DirectoryServices.Protocols;
+    using System.Net;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -12,16 +13,23 @@ namespace HipercowApi.Tools
     public interface ILdapManager
     {
         /// <summary>
-        /// Authenticate against the DIDE domain.
+        /// Create a network credentials object from the login request.
         /// </summary>
-        /// <param name="request">
-        /// The login request (user, password).
+        /// <param name="request">The login details (username and password).
+        /// They cannot both be empty.</param>
+        /// <returns>A network credential object.</returns>
+        public NetworkCredential GetLdapCredentials(LoginRequest request);
+
+        /// <summary>
+        /// Create an Ldap connection ready to attempt binding with.
+        /// </summary>
+        /// <param name="creds">
+        /// The network credentials created by GetLdapCredentials.
         /// </param>
         /// <returns>
-        /// A LdapConnection object, or a null if it failed to
-        /// connect or authenticate.
+        /// A LdapConnection object.
         /// </returns>
-        public LdapConnection? GetDideLdapConnection(LoginRequest request);
+        public LdapConnection GetLdapConnection(NetworkCredential creds);
 
         /// <summary>
         /// Using LDAP, query and parse a list of groups that a DIDE
@@ -33,5 +41,12 @@ namespace HipercowApi.Tools
         /// A list of names of groups.
         /// </returns>
         public List<string> GetDomainGroups(string user, LdapConnection ldap);
+
+        /// <summary>
+        /// Try to bind to an LDAP server using credentials.
+        /// </summary>
+        /// <param name="ldap">The LdapConnection object.</param>
+        /// <param name="credentials">The NetworkCredential object.</param>
+        public void DoBind(LdapConnection ldap, NetworkCredential credentials);
     }
 }
