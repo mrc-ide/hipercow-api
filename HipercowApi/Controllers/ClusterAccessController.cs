@@ -29,7 +29,8 @@ namespace HipercowApi.Controllers
         /// A list of cluster names.
         /// </returns>
         [HttpGet]
-        public IActionResult GetMyClusters([FromHeader(Name = "Authorization")] string authHeader)
+        public IActionResult GetMyClusters([FromHeader(Name = "Authorization")]
+                                           string authHeader)
         {
             var token = authHeader.Replace("Bearer ", string.Empty);
             var dict = _jwtSupport.DecryptToken(token);

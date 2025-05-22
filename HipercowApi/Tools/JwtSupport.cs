@@ -58,8 +58,10 @@ namespace HipercowApi.Tools
         /// </summary>
         /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
-        /// <param name="wpia_hn_access">Whether the user has access to the wpia-hn cluster.</param>
-        /// <param name="wpia_hn_admin">Whether the user is an admin on the wpia-hn cluster.</param>
+        /// <param name="wpia_hn_access">
+        /// Whether the user has access to the wpia-hn cluster.</param>
+        /// <param name="wpia_hn_admin">
+        /// Whether the user is an admin on the wpia-hn cluster.</param>
         /// <returns>The string of the token.</returns>
         public string GenerateEncryptedToken(
             string username,
@@ -77,7 +79,10 @@ namespace HipercowApi.Tools
             { "wpia_hn_admin", wpia_hn_admin },
             { JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString() },
             { JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds() },
-            { JwtRegisteredClaimNames.Exp, DateTimeOffset.UtcNow.AddMinutes(60 * 24).ToUnixTimeSeconds() },
+            {
+                    JwtRegisteredClaimNames.Exp,
+                    DateTimeOffset.UtcNow.AddMinutes(60 * 24).ToUnixTimeSeconds()
+            },
             { JwtRegisteredClaimNames.Iss, "Hipercow API" },
             { JwtRegisteredClaimNames.Aud, "Hipercow Users" },
         };

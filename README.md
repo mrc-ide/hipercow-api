@@ -14,7 +14,7 @@ This is the .NET Core Web api to talk to our MS HPC Cluster.
 * `/api/v1/ClusterLoad/{cluster}` - Cluster name, list of nodeLoads - each of which is name, coresInUse, nodeCores and state.
 * `/api/v1/JobList` - POST cluster, user, state and maxRows to query jobs the headnode knows about with those filters.
 * `/metrics`- Endpoint for Prometheus.
-* `/api/v1/auth/login` - Authenticate - form entry for user and password, providing a JWT and Session-id.
+* `/api/v1/auth/login` - Authenticate - form entry for user and password, providing a JWT.
 * `/api/v1/auth/logout` - Logout removing session.
-* `/api/v1/ClusterAccess` - Having authenticated, returns clusters the user has access to (if any).
+* `/api/v1/ClusterAccess` - Having authenticated, returns clusters the user has access to.
 

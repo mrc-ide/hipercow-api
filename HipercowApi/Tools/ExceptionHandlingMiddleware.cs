@@ -14,7 +14,9 @@ namespace HipercowAPI.Tools
     /// <param name="next">Next delegate.</param>
     /// <param name="logger">Logger.</param>
     [ExcludeFromCodeCoverage]
-    public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+    public class ExceptionHandlingMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionHandlingMiddleware> logger)
     {
         private readonly RequestDelegate _next = next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
@@ -53,13 +55,15 @@ namespace HipercowAPI.Tools
 
                 case LdapNoClusterPermissions:
                     response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    response.Message = "Domain authentication succeeded, but no permission to access the cluster.";
+                    response.Message = "Domain authentication succeeded, " +
+                                       "but no permission to access the cluster.";
                     response.Details = exception.Message;
                     break;
 
                 case LdapEmptyUsernamePassword:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    response.Message = "Username and password both need providing for authentication";
+                    response.Message = "Username and password both need providing " +
+                                       "for authentication";
                     response.Details = exception.Message;
                     break;
 

@@ -50,7 +50,9 @@ namespace HipercowApiUnitTests.Controllers
             NetworkCredential creds = new NetworkCredential("abc", "def", "domain.com");
             mockLM.Setup(x => x.GetLdapCredentials(It.IsAny<LoginRequest>())).Returns(creds);
             mockLM.Setup(x => x.GetLdapConnection(It.IsAny<NetworkCredential>())).Verifiable();
-            mockLM.Setup(x => x.DoBind(It.IsAny<LdapConnection>(), It.IsAny<NetworkCredential>()))
+            mockLM.Setup(x => x.DoBind(
+                It.IsAny<LdapConnection>(),
+                It.IsAny<NetworkCredential>()))
                   .Throws(new LdapAuthFailure("abc"));
 
             AuthController ac = new(
@@ -96,8 +98,11 @@ namespace HipercowApiUnitTests.Controllers
 
             LoginRequest request = new() { Username = "abc", Password = "def" };
 
-            mockLM.Setup(x => x.GetLdapConnection(It.IsAny<NetworkCredential>())).Returns(fakeLdap);
-            mockLM.Setup(x => x.DoBind(It.IsAny<LdapConnection>(), It.IsAny<NetworkCredential>())).Verifiable();
+            mockLM.Setup(x => x.GetLdapConnection(It.IsAny<NetworkCredential>()))
+                .Returns(fakeLdap);
+            mockLM.Setup(x => x.DoBind(
+                It.IsAny<LdapConnection>(),
+                It.IsAny<NetworkCredential>())).Verifiable();
             mockLM.Setup(x => x.GetDomainGroups("abc", fakeLdap)).Returns(["WPIA-HN.HPC Users - All Nodes"]);
             IActionResult res = ac.Login(request);
             var okResult = Assert.IsType<OkObjectResult>(res);
