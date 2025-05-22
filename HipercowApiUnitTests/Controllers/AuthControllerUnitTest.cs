@@ -50,14 +50,10 @@ namespace HipercowApiUnitTests.Controllers
                 mockLM.Object);
 
             LoginRequest request = new LoginRequest { Username = "abc", Password = "def" };
-            LdapConnectionWrapper failed = new LdapConnectionWrapper
-            {
-                Connection = null,
-                Result = ac.BadRequest("Failed"),
-            };
-            mockLM.Setup(x => x.GetDideLdapConnection(ac, request)).Returns(failed);
+            LdapConnection? failed = null;
+            mockLM.Setup(x => x.GetDideLdapConnection(request)).Returns(failed);
             IActionResult res = ac.Login(request);
-            Assert.Equivalent(res, ac.BadRequest("Failed"));
+            Assert.Equivalent(res, ac.Unauthorized("Failed to login"));
         }
 
         /// <summary>
@@ -94,14 +90,9 @@ namespace HipercowApiUnitTests.Controllers
             LdapConnection fakeLdap = new(fakeLdapDirId);
 
             LoginRequest request = new() { Username = "abc", Password = "def" };
-            LdapConnectionWrapper success = new()
-            {
-                Connection = fakeLdap,
-                Result = ac.Ok(),
-            };
 
-            mockLM.Setup(x => x.GetDideLdapConnection(ac, request)).Returns(success);
-            mockLM.Setup(x => x.GetDomainGroups("abc", success.Connection)).Returns(["WPIA-HN.HPC Users - All Nodes"]);
+            mockLM.Setup(x => x.GetDideLdapConnection(request)).Returns(fakeLdap);
+            mockLM.Setup(x => x.GetDomainGroups("abc", fakeLdap)).Returns(["WPIA-HN.HPC Users - All Nodes"]);
             IActionResult res = ac.Login(request);
             var okResult = Assert.IsType<OkObjectResult>(res);
             dynamic? token = okResult.Value;

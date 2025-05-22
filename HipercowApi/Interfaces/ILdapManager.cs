@@ -14,17 +14,14 @@ namespace HipercowApi.Tools
         /// <summary>
         /// Authenticate against the DIDE domain.
         /// </summary>
-        /// <param name="controller">
-        /// The API controller making the call.
-        /// </param>
         /// <param name="request">
         /// The login request (user, password).
         /// </param>
         /// <returns>
-        /// A LdapConnectionWrapper object, which contains a
-        /// connection (if possible to create), and a web result code.
+        /// A LdapConnection object, or a null if it failed to
+        /// connect or authenticate.
         /// </returns>
-        public LdapConnectionWrapper GetDideLdapConnection(ControllerBase controller, LoginRequest request);
+        public LdapConnection? GetDideLdapConnection(LoginRequest request);
 
         /// <summary>
         /// Using LDAP, query and parse a list of groups that a DIDE

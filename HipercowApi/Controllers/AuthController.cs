@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Imperial College London. All rights reserved.
 
+using System.DirectoryServices.Protocols;
 using HipercowApi.Tools;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,19 +27,24 @@ public class AuthController(JwtSupport jwtSupport, ILdapManager ldapManager) : C
             return BadRequest("Username or password cannot be empty.");
         }
 
-        LdapConnectionWrapper ldap = _ldapManager.GetDideLdapConnection(this, request);
-        if (ldap.Connection == null)
+        LdapConnection? ldap = _ldapManager.GetDideLdapConnection(request);
+        if (ldap is null)
         {
-            return ldap.Result;
+            return Unauthorized("Failed to login");
         }
 
-        List<string> groups = _ldapManager.GetDomainGroups(request.Username, ldap.Connection);
-        var token = _jwtSupport.GenerateEncryptedToken(
+        List<string> groups = _ldapManager.GetDomainGroups(request.Username, ldap);
+        bool wpia_user = groups.Contains("WPIA-HN.HPC Users - All Nodes");
+        bool wpia_admin = groups.Contains("WPIA-HN.HPC Administrators");
+        if (!wpia_user && !wpia_admin)
+        {
+            return BadRequest();
+        }
+
+        return Ok(_jwtSupport.GenerateEncryptedToken(
             request.Username,
             request.Password,
-            groups.Contains("WPIA-HN.HPC Users - All Nodes"),
-            groups.Contains("WPIA-HN.HPC Administrators"));
-
-        return Ok(token);
+            wpia_user,
+            wpia_admin));
     }
 }

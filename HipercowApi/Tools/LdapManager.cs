@@ -21,7 +21,7 @@ public class LdapManager : ILdapManager
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public LdapConnectionWrapper GetDideLdapConnection(ControllerBase controller, LoginRequest request)
+    public LdapConnection? GetDideLdapConnection(LoginRequest request)
     {
         try
         {
@@ -30,27 +30,11 @@ public class LdapManager : ILdapManager
             NetworkCredential credentials = new(request.Username, request.Password, _Domain);
             ldap.AuthType = AuthType.Negotiate;
             ldap.Bind(credentials);
-            return new LdapConnectionWrapper
-            {
-                Connection = ldap,
-                Result = controller.Ok(),
-            };
+            return ldap;
         }
         catch (LdapException)
         {
-            return new LdapConnectionWrapper
-            {
-                Connection = null,
-                Result = controller.Unauthorized("Invalid credentials."),
-            };
-        }
-        catch (Exception ex)
-        {
-            return new LdapConnectionWrapper
-            {
-                Connection = null,
-                Result = controller.StatusCode(500, $"Internal error: {ex.Message}"),
-            };
+            return null;
         }
     }
 
