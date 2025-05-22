@@ -34,17 +34,10 @@ public class AuthController(JwtSupport jwtSupport, ILdapManager ldapManager) : C
         }
 
         List<string> groups = _ldapManager.GetDomainGroups(request.Username, ldap);
-        bool wpia_user = groups.Contains("WPIA-HN.HPC Users - All Nodes");
-        bool wpia_admin = groups.Contains("WPIA-HN.HPC Administrators");
-        if (!wpia_user && !wpia_admin)
-        {
-            return BadRequest();
-        }
-
         return Ok(_jwtSupport.GenerateEncryptedToken(
             request.Username,
             request.Password,
-            wpia_user,
-            wpia_admin));
+            groups.Contains("WPIA-HN.HPC Users - All Nodes"),
+            groups.Contains("WPIA-HN.HPC Administrators")));
     }
 }
