@@ -3,6 +3,7 @@
 namespace HipercowApi.Controllers
 {
     using Hipercow_api.Tools.Exceptions;
+    using HipercowApi.Attributes;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Mvc;
 
@@ -24,19 +25,16 @@ namespace HipercowApi.Controllers
         /// <summary>
         /// Authenticated endpoint to return the list of clusters available to a user.
         /// </summary>
-        /// <param name="authHeader">Header information to get the encrypted JWT from.</param>
         /// <returns>
         /// A list of cluster names.
         /// </returns>
         [HttpGet]
-        public IActionResult GetMyClusters([FromHeader(Name = "Authorization")]
-                                           string authHeader)
+        [RequireJwt]
+        public IActionResult GetMyClusters()
         {
-            var token = authHeader.Replace("Bearer ", string.Empty);
-            var dict = _jwtSupport.DecryptToken(token);
-
-            var jwtUsername = dict["sub"];
-            var wpiahn_access = dict["wpia_hn_access"].Equals(true);
+            var jwtData = HttpContext.Items["JwtData"] as Dictionary<string, object>;
+            var jwtUsername = jwtData!["sub"];
+            var wpiahn_access = jwtData["wpia_hn_access"].Equals(true);
 
             if (wpiahn_access)
             {

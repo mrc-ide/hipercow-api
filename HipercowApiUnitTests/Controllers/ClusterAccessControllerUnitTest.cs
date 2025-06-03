@@ -3,8 +3,11 @@
 namespace HipercowApiUnitTests.Controllers
 {
     using System.Diagnostics.CodeAnalysis;
+    using Hipercow_api.Tools.Exceptions;
     using HipercowApi.Controllers;
     using HipercowApi.Tools;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// Test the /clusteraccess endpoint.
@@ -19,11 +22,21 @@ namespace HipercowApiUnitTests.Controllers
         public void GetClusterAccess_Works()
         {
             JwtSupport jwtSupport = new();
-            string authHeader = "Bearer " +
-                jwtSupport.GenerateEncryptedToken("abc", "def", true, false);
+            var token = jwtSupport.DecryptToken(
+                jwtSupport.GenerateEncryptedToken("abc", "def", true, false));
+
+            Assert.NotNull(token);
+            Assert.IsType<Dictionary<string, object>>(token);
+            Assert.True(token.ContainsKey("wpia_hn_access"));
 
             ClusterAccessController cac = new(jwtSupport);
-            var res = cac.GetMyClusters(authHeader);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["JwtData"] = token;
+            cac.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext,
+            };
+            var res = cac.GetMyClusters();
             Assert.Equivalent(cac.Ok("wpia-hn"), res);
         }
 
@@ -36,18 +49,23 @@ namespace HipercowApiUnitTests.Controllers
         public void GetClusterAccessDenied_Works()
         {
             JwtSupport jwtSupport = new();
-            string authHeader = "Bearer " +
-                jwtSupport.GenerateEncryptedToken("abc", "def", false, false);
+            var token = jwtSupport.DecryptToken(
+                jwtSupport.GenerateEncryptedToken("abc", "def", false, false));
 
             ClusterAccessController cac = new(jwtSupport);
-            try
+            var httpContext = new DefaultHttpContext();
+            httpContext.Items["JwtData"] = token;
+            cac.ControllerContext = new ControllerContext
             {
-                cac.GetMyClusters(authHeader);
-            }
-            catch (Exception ex)
+                HttpContext = httpContext,
+            };
+
+            var ex = Assert.Throws<LdapNoClusterPermissions>(() =>
             {
-                Assert.Equal("LdapNoClusterPermissions", ex.GetType().Name);
-            }
+                cac.GetMyClusters();
+            });
+
+            Assert.Equal("LdapNoClusterPermissions", ex.GetType().Name);
         }
     }
 }
