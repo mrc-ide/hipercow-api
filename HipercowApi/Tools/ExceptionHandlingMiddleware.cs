@@ -50,22 +50,17 @@ namespace HipercowAPI.Tools
             {
                 case LdapAuthFailure:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    response.Message = "Authentication failed";
-                    response.Details = exception.Message;
+                    response.Message = exception.Message;
                     break;
 
                 case LdapNoClusterPermissions:
                     response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    response.Message = "Domain authentication succeeded, " +
-                                       "but no permission to access the cluster.";
-                    response.Details = exception.Message;
+                    response.Message = exception.Message;
                     break;
 
                 case LdapEmptyUsernamePassword:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    response.Message = "Username and password both need providing " +
-                                       "for authentication";
-                    response.Details = exception.Message;
+                    response.Message = exception.Message;
                     break;
 
                 default:
