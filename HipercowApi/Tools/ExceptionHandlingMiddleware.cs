@@ -19,6 +19,11 @@ namespace HipercowAPI.Tools
         RequestDelegate next,
         ILogger<ExceptionHandlingMiddleware> logger)
     {
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
         private readonly RequestDelegate _next = next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
 
@@ -35,12 +40,13 @@ namespace HipercowAPI.Tools
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception occurred");
-                await HandleExceptionAsync(context, ex);
+                var errorId = Guid.NewGuid().ToString();
+                _logger.LogError(ex, "Unhandled exception. Error ID: {ErrorId}", errorId);
+                await HandleExceptionAsync(context, ex, errorId);
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private async Task HandleExceptionAsync(HttpContext context, Exception exception, string errorId)
         {
             context.Response.ContentType = "application/json";
 
@@ -65,18 +71,14 @@ namespace HipercowAPI.Tools
 
                 default:
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    response.Message = "An internal server error occurred";
-                    response.Details = "Please contact support if the problem persists";
+                    response.Message = "An internal server error occurred.";
+                    response.Details = "Error Id: " + errorId;
                     break;
             }
 
             context.Response.StatusCode = response.StatusCode;
 
-            var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
-
+            var jsonResponse = JsonSerializer.Serialize(response, _jsonSerializerOptions);
             await context.Response.WriteAsync(jsonResponse);
         }
     }
