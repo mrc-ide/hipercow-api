@@ -1,6 +1,6 @@
 // Copyright (c) Imperial College London. All rights reserved.
 
-namespace HipercowAPI.Tools
+namespace HipercowApi.Middleware
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

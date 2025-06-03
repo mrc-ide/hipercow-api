@@ -67,7 +67,7 @@ namespace HipercowApi
             builder.Services.AddSingleton<ILdapManager, LdapManager>();
             builder.Services.AddSingleton<JwtSupport>();
             var app = builder.Build();
-            app.UseMiddleware<HipercowAPI.Tools.ExceptionHandlingMiddleware>();
+            app.UseMiddleware<HipercowApi.Middleware.ExceptionHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
