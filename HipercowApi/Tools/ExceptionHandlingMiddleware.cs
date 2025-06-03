@@ -7,6 +7,7 @@ namespace HipercowAPI.Tools
     using System.Net;
     using System.Text.Json;
     using Hipercow_api.Tools.Exceptions;
+    using HipercowApi.Types;
 
     /// <summary>
     /// Class for exception middleware.

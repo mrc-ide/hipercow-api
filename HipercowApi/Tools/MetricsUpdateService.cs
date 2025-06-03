@@ -21,7 +21,7 @@ namespace HipercowApi.Tools
     public class MetricsUpdateService(
         IClusterHandleCache clusterHandleCache) : BackgroundService
     {
-        private static readonly List<string> _InterestingStates = new()
+        private static readonly List<string> _interestingStates = new()
         {
             "Running", "Queued", "Finished", "Failed", "Cancelled",
         };
@@ -117,7 +117,7 @@ namespace HipercowApi.Tools
                 _userJobs.TryGetValue(user, out Dictionary<string, dynamic>? value);
                 if (value is null)
                 {
-                    value = _InterestingStates.ToDictionary(state => state, _ => (dynamic)0);
+                    value = _interestingStates.ToDictionary(state => state, _ => (dynamic)0);
                     value["coreHours"] = 0.0f;
                     _userJobs.Add(user, value);
                 }
@@ -166,7 +166,7 @@ namespace HipercowApi.Tools
                     foreach (var user in _userJobs.Keys)
                     {
                         var details = _userJobs[user];
-                        foreach (string state in _InterestingStates)
+                        foreach (string state in _interestingStates)
                         {
                             MetricsRegistry.JobsGauge.
                                 WithLabels([cluster, user, state]).

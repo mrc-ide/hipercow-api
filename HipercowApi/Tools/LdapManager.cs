@@ -12,9 +12,9 @@ using HipercowApi.Tools;
 [ExcludeFromCodeCoverage]
 public class LdapManager : ILdapManager
 {
-    private static readonly string _LdapServer = "wpia-didedc2.dide.ic.ac.uk";
-    private static readonly int _LdapPort = 389;
-    private static readonly string _Domain = "dide.local";
+    private static readonly string _ldapServer = "wpia-didedc2.dide.ic.ac.uk";
+    private static readonly int _ldapPort = 389;
+    private static readonly string _domain = "dide.local";
 
     /// <inheritdoc/>
     public NetworkCredential GetLdapCredentials(LoginRequest request)
@@ -24,13 +24,13 @@ public class LdapManager : ILdapManager
             throw new LdapEmptyUsernamePassword();
         }
 
-        return new NetworkCredential(request.Username, request.Password, _Domain);
+        return new NetworkCredential(request.Username, request.Password, _domain);
     }
 
     /// <inheritdoc/>
     public LdapConnection GetLdapConnection(NetworkCredential creds)
     {
-        LdapDirectoryIdentifier ldapDirId = new(_LdapServer, _LdapPort);
+        LdapDirectoryIdentifier ldapDirId = new(_ldapServer, _ldapPort);
         LdapConnection ldap = new(ldapDirId)
         {
             AuthType = AuthType.Negotiate,
