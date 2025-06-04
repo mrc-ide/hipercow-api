@@ -3,7 +3,6 @@
 namespace HipercowApi.Middleware
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Text.Json;
     using Hipercow_api.Tools.Exceptions;
@@ -14,7 +13,6 @@ namespace HipercowApi.Middleware
     /// </summary>
     /// <param name="next">Next delegate.</param>
     /// <param name="logger">Logger.</param>
-    [ExcludeFromCodeCoverage]
     public class ExceptionHandlingMiddleware(
         RequestDelegate next,
         ILogger<ExceptionHandlingMiddleware> logger)
