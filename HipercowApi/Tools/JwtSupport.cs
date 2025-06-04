@@ -37,7 +37,7 @@ namespace HipercowApi.Tools
         /// </summary>
         /// <param name="token">The encrypted token.</param>
         /// <returns>The dictionary of unencrypted keys and values.</returns>
-        public Dictionary<string, object> DecryptToken(string token)
+        public virtual Dictionary<string, object> DecryptToken(string token)
         {
             string signedJwt = JWT.Decode(
                     token,

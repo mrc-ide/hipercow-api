@@ -22,8 +22,8 @@ namespace HipercowApi.Middleware
         /// <returns>Task.</returns>
         public async Task InvokeAsync(HttpContext context)
         {
-            var endpoint = context.GetEndpoint();
-            var requiresJwt = endpoint?.Metadata.GetMetadata<RequireJwtAttribute>() != null;
+            var endpoint = context.GetEndpoint()!;
+            var requiresJwt = endpoint.Metadata.GetMetadata<RequireJwtAttribute>() != null;
 
             if (requiresJwt)
             {

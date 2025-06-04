@@ -12,6 +12,7 @@ namespace HipercowApiUnitTests.Controllers
     /// <summary>
     /// Test the /clusteraccess endpoint.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ClusterAccessControllerUnitTest
     {
         /// <summary>

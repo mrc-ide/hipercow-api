@@ -7,16 +7,15 @@ namespace HipercowApiUnitTests.Controllers
     using System.Net;
     using System.Security.Claims;
     using Hipercow_api.Tools.Exceptions;
-    using HipercowApi.Models;
     using HipercowApi.Tools;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Caching.Memory;
     using Moq;
 
     /// <summary>
     /// Test the /auth endpoints.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class AuthControllerUnitTest
     {
         /// <summary>
