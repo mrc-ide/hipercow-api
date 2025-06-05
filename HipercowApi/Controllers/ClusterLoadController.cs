@@ -10,30 +10,24 @@ namespace HipercowApi.Controllers
     /// The /clusters and /clusters/xxx endpoints provide the list of clusters
     /// and information about a particular cluster respectively.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ClusterLoadController"/> class.
+    /// </remarks>
+    /// <param name="clusterLoadQuery">
+    /// The ClusterLoadQuery object for dependency injection.
+    /// Contains GetClusterLoad function.
+    /// </param>
+    /// <param name="clusterHandleCache">The ClusterHandleCache object so we can
+    /// retrieve the connected scheduler object for the requested cluster.
+    /// </param>
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class ClusterLoadController : ControllerBase
+    public class ClusterLoadController(
+        IClusterLoadQuery clusterLoadQuery,
+        IClusterHandleCache clusterHandleCache) : ControllerBase
     {
-        private readonly IClusterLoadQuery clusterLoadQuery;
-        private readonly IClusterHandleCache clusterHandleCache;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClusterLoadController"/> class.
-        /// </summary>
-        /// <param name="clusterLoadQuery">
-        /// The ClusterLoadQuery object for dependency injection.
-        /// Contains GetClusterLoad function.
-        /// </param>
-        /// <param name="clusterHandleCache">The ClusterHandleCache object so we can
-        /// retrieve the connected scheduler object for the requested cluster.
-        /// </param>
-        public ClusterLoadController(
-            IClusterLoadQuery clusterLoadQuery,
-            IClusterHandleCache clusterHandleCache)
-        {
-            this.clusterLoadQuery = clusterLoadQuery;
-            this.clusterHandleCache = clusterHandleCache;
-        }
+        private readonly IClusterLoadQuery _clusterLoadQuery = clusterLoadQuery;
+        private readonly IClusterHandleCache _clusterHandleCache = clusterHandleCache;
 
         /// <summary>
         /// Endpoint to return current load of a particular cluster.
@@ -47,10 +41,10 @@ namespace HipercowApi.Controllers
         [HttpGet("{cluster}")]
         public IActionResult Get(string cluster)
         {
-            IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster);
+            IScheduler? scheduler = _clusterHandleCache.GetClusterHandle(cluster);
             return scheduler is null ?
-                this.NotFound() :
-                this.Ok(this.clusterLoadQuery.GetClusterLoad(cluster, scheduler));
+                NotFound() :
+                Ok(_clusterLoadQuery.GetClusterLoad(cluster, scheduler));
         }
     }
 }

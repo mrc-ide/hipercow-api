@@ -71,6 +71,44 @@ namespace HipercowApiUnitTests.Tools
         [ExcludeFromCodeCoverage]
         public void MetricsUpdate_Works()
         {
+            Mock<IClusterHandleCache> mockCHC = MockClusterHandle();
+            MetricsUpdateService mus = new(mockCHC.Object);
+
+            mus.UpdateByState("potato", JobState.Finished, 24);
+            var res = mus.GetUserJobs();
+
+            Assert.Equal(1, res["A"]["Finished"]);
+            Assert.Equal(2, Math.Round(res["A"]["coreHours"]));
+            Assert.Equal(1, res["B"]["Finished"]);
+            Assert.Equal(2, Math.Round(res["B"]["coreHours"]));
+            Assert.Equal(1, res["C"]["Finished"]);
+            Assert.Equal(64, Math.Round(res["C"]["coreHours"]));
+            Assert.False(res.ContainsKey("D"));
+
+            mus.UpdateByState("potato", JobState.Canceled, 24);
+            res = mus.GetUserJobs();
+            Assert.False(res["A"].ContainsKey("Canceled"));
+            Assert.True(res["A"].ContainsKey("Cancelled"));
+        }
+
+        /// <summary>
+        /// Test metrics update call with jobs still running.
+        /// </summary>
+        [Fact]
+        [ExcludeFromCodeCoverage]
+        public void MetricsUpdate_Running_Works()
+        {
+            Mock<IClusterHandleCache> mockCHC = MockClusterHandle();
+            MetricsUpdateService mus = new(mockCHC.Object);
+            mus.UpdateByState("potato", JobState.Running, int.MaxValue);
+            Thread.Sleep(10);
+            var res = mus.GetUserJobs();
+            float corehours = res["D"]["coreHours"];
+            Assert.True(corehours >= 30 * 64);
+        }
+
+        private static Mock<IClusterHandleCache> MockClusterHandle()
+        {
             var mockScheduler = new Mock<IScheduler>();
             mockScheduler.Setup(x => x.Connect("potato")).Verifiable();
             var mockRowEnumerator = new Mock<ISchedulerRowEnumerator>();
@@ -80,35 +118,15 @@ namespace HipercowApiUnitTests.Tools
                 It.IsAny<SortCollection>())).Returns(mockRowEnumerator.Object);
             mockScheduler.Setup(x => x.CreateFilterCollection()).
                 Returns(new FilterCollection());
-            mockRowEnumerator.Setup(x => x.GetRows(It.IsAny<int>())).
-                Returns(new PropertyRowSet(null, AllJobs()));
+
+            mockRowEnumerator.As<IEnumerable<PropertyRow>>()
+              .Setup(m => m.GetEnumerator())
+              .Returns(() => AllJobs().GetEnumerator());
 
             var mockCHC = new Mock<IClusterHandleCache>();
             mockCHC.Setup(x => x.GetClusterHandle(It.IsAny<string>())).
                 Returns(mockScheduler.Object);
-            MetricsUpdateService mus = new(mockCHC.Object);
-
-            mus.UpdateByState("potato", JobState.Finished, 24);
-            var res = mus.GetUserJobs();
-
-            Assert.Equal(1, res["A"]["Finished"]);
-            Assert.Equal(2, res["A"]["coreHours"]);
-            Assert.Equal(1, res["B"]["Finished"]);
-            Assert.Equal(2, res["B"]["coreHours"]);
-            Assert.Equal(1, res["C"]["Finished"]);
-            Assert.Equal(64, res["C"]["coreHours"]);
-            Assert.False(res.ContainsKey("D"));
-
-            mus.UpdateByState("potato", JobState.Canceled, 24);
-            res = mus.GetUserJobs();
-            Assert.False(res["A"].ContainsKey("Canceled"));
-            Assert.True(res["A"].ContainsKey("Cancelled"));
-
-            mus.UpdateByState("potato", JobState.Running, 24);
-            Thread.Sleep(10);
-            res = mus.GetUserJobs();
-            float corehours = res["A"]["coreHours"];
-            Assert.True(corehours > 6);
+            return mockCHC;
         }
 
         private static PropertyRow FakeJobInfo(
@@ -132,7 +150,7 @@ namespace HipercowApiUnitTests.Tools
                     new StoreProperty(JobPropertyIds.UnitType, unitType)]);
         }
 
-        private static PropertyRow[] AllJobs()
+        private static List<PropertyRow> AllJobs()
         {
             DateTime t1 = DateTime.Now.AddHours(-2);
             DateTime t2 = DateTime.Now.AddHours(-1);
@@ -143,7 +161,7 @@ namespace HipercowApiUnitTests.Tools
                 FakeJobInfo("A", "A", dtnew, t1, t2, 2, 0, JobUnitType.Core),
                 FakeJobInfo(string.Empty, "B", dtnew, t1, t2, 2, 0, JobUnitType.Core),
                 FakeJobInfo("C", "C", dtnew, t1, t2, 0, 2, JobUnitType.Node),
-                FakeJobInfo("D", "D", dtold, t1, t2, 0, 2, JobUnitType.Node)
+                FakeJobInfo("D", "D", dtold, dtold, t2, 0, 2, JobUnitType.Node)
             ];
         }
     }

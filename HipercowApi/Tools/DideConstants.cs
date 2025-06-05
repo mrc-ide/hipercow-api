@@ -15,7 +15,7 @@ namespace HipercowApi.Tools
         /// The list of queues that we publish for wpia-hn. If we add more
         /// clusters in the future, this should be come a look-up.
         /// </summary>
-        private static readonly List<string> WpiaHnQueues =
+        private static readonly List<string> _wpiaHnQueues =
         [
                "AllNodes",
                "Training",
@@ -43,7 +43,7 @@ namespace HipercowApi.Tools
         {
             return cluster switch
             {
-                "wpia-hn" => WpiaHnQueues,
+                "wpia-hn" => _wpiaHnQueues,
                 _ => [],
             };
         }

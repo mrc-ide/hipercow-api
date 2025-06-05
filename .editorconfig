@@ -1,0 +1,14 @@
+# Top-most EditorConfig file
+root = true
+
+[*.cs]
+
+# Allow underscore prefix for private fields
+dotnet_diagnostic.SA1309.severity = none
+
+# Don't require this. on all local items.
+dotnet_diagnostic.SA1101.severity = none
+
+# Optional: Use tabs vs spaces, indent size, etc.
+indent_style = space
+indent_size = 4

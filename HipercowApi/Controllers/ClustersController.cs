@@ -10,31 +10,25 @@ namespace HipercowApi.Controllers
     /// The /clusters and /clusters/xxx endpoints provide the list of clusters
     /// and information about a particular cluster respectively.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the
+    /// <see cref="ClustersController"/> class.
+    /// </remarks>
+    /// <param name="clusterInfoQuery">
+    /// The cluster info query object for dependency injection.
+    /// Contains GetClusterInfo function.
+    /// </param>
+    /// <param name="clusterHandleCache">The cluster handle cache so we can look up
+    /// the connected scheduler object for the requested cluster.
+    /// </param>
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class ClustersController : ControllerBase
+    public class ClustersController(
+        IClusterInfoQuery clusterInfoQuery,
+        IClusterHandleCache clusterHandleCache) : ControllerBase
     {
-        private readonly IClusterInfoQuery clusterInfoQuery;
-        private readonly IClusterHandleCache clusterHandleCache;
-
-        /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="ClustersController"/> class.
-        /// </summary>
-        /// <param name="clusterInfoQuery">
-        /// The cluster info query object for dependency injection.
-        /// Contains GetClusterInfo function.
-        /// </param>
-        /// <param name="clusterHandleCache">The cluster handle cache so we can look up
-        /// the connected scheduler object for the requested cluster.
-        /// </param>
-        public ClustersController(
-            IClusterInfoQuery clusterInfoQuery,
-            IClusterHandleCache clusterHandleCache)
-        {
-            this.clusterInfoQuery = clusterInfoQuery;
-            this.clusterHandleCache = clusterHandleCache;
-        }
+        private readonly IClusterInfoQuery _clusterInfoQuery = clusterInfoQuery;
+        private readonly IClusterHandleCache _clusterHandleCache = clusterHandleCache;
 
         /// <summary>
         /// Endpoint to return the list of available clusters.
@@ -61,10 +55,10 @@ namespace HipercowApi.Controllers
         [HttpGet("{cluster}")]
         public IActionResult Get(string cluster)
         {
-            IScheduler? scheduler = this.clusterHandleCache.GetClusterHandle(cluster);
+            IScheduler? scheduler = _clusterHandleCache.GetClusterHandle(cluster);
             return scheduler is null ?
-                this.NotFound() :
-                this.Ok(this.clusterInfoQuery.GetClusterInfo(cluster, scheduler));
+                NotFound() :
+                Ok(_clusterInfoQuery.GetClusterInfo(cluster, scheduler));
         }
     }
 }

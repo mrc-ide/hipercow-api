@@ -19,8 +19,8 @@ namespace HipercowApi.Tools
     public class ClusterHandleCache(
         ISchedulerFactory schedulerFactory) : IClusterHandleCache
     {
-        private readonly Dictionary<string, IScheduler> handles = [];
-        private readonly ISchedulerFactory schedulerFactory = schedulerFactory;
+        private readonly Dictionary<string, IScheduler> _handles = [];
+        private readonly ISchedulerFactory _schedulerFactory = schedulerFactory;
 
         /// <summary>
         /// Initialise the dictionary of handles with a list of clusters.
@@ -32,14 +32,14 @@ namespace HipercowApi.Tools
         [ExcludeFromCodeCoverage]
         public void InitialiseHandles(List<string> clusters)
         {
-            clusters.ForEach(cluster => this.GetClusterHandle(cluster));
+            clusters.ForEach(cluster => GetClusterHandle(cluster));
         }
 
         /// <inheritdoc/>
         public IScheduler? GetClusterHandle(string cluster)
         {
             List<string> dideClusters = DideConstants.GetDideClusters();
-            this.handles.TryGetValue(cluster, out IScheduler? result);
+            _handles.TryGetValue(cluster, out IScheduler? result);
             if (result != null)
             {
                 return result;
@@ -47,9 +47,9 @@ namespace HipercowApi.Tools
 
             if (dideClusters.Contains(cluster))
             {
-                IScheduler scheduler = this.schedulerFactory.NewScheduler();
+                IScheduler scheduler = _schedulerFactory.NewScheduler();
                 scheduler.Connect(cluster);
-                this.handles.Add(cluster, scheduler);
+                _handles.Add(cluster, scheduler);
                 return scheduler;
             }
 

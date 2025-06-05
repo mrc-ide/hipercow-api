@@ -2,8 +2,14 @@
 
 namespace HipercowApiUnitTests.Tools
 {
+    using HipercowApi.Controllers;
+    using HipercowApi.Models;
     using HipercowApi.Tools;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Hpc.Scheduler.Properties;
+    using Microsoft.Hpc.Scheduler.Session;
+    using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 
     /// <summary>
     /// Tests on the unit class.
