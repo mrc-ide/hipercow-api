@@ -38,13 +38,11 @@ namespace HipercowApi.Middleware
             }
             catch (Exception ex)
             {
-                var errorId = Guid.NewGuid().ToString();
-                _logger.LogError(ex, "Unhandled exception. Error ID: {ErrorId}", errorId);
-                await HandleExceptionAsync(context, ex, errorId);
+                await HandleExceptionAsync(context, ex);
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception, string errorId)
+        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
 
@@ -68,9 +66,11 @@ namespace HipercowApi.Middleware
                     break;
 
                 default:
+                    var errorId = Guid.NewGuid().ToString();
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     response.Message = "An internal server error occurred.";
                     response.Details = "Error Id: " + errorId;
+                    _logger.LogError(exception, "Unhandled exception. Error ID: {ErrorId}", errorId);
                     break;
             }
 
